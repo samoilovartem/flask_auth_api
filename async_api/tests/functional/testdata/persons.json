@@ -1,0 +1,22 @@
+[
+  {
+    "id": "00e1b6fd-cc86-4841-a983-5a3d34e4da98",
+    "full_name": "Lars Alexanderson",
+    "roles": [
+      "actor"
+    ],
+    "movies_ids": [
+      "ec9497e1-1c72-4290-b485-9d36fe01037e"
+    ]
+  },
+  {
+    "id": "00e2e97b-3a93-4d44-a31d-9346b1348cc7",
+    "full_name": "Leon Kennedy",
+    "roles": [
+      "actor"
+    ],
+    "movies_ids": [
+      "f09581c8-f364-4673-836e-ef584e8ebcb7"
+    ]
+  }
+]

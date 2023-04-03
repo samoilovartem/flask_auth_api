@@ -1,0 +1,132 @@
+[
+  {
+    "id": "2a090dde-f688-46fe-a9f4-b781a9852756",
+    "imdb_rating": 6.7,
+     "genres": [
+      {
+        "id": "120a21cf-9097-479e-904a-13dd7198c1dd",
+        "name": "Adventure",
+        "description": null
+      },
+      {
+        "id": "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
+        "name": "Action",
+        "description": null
+      },
+      {
+        "id": "b92ef010-5e4c-4fd0-99d6-41b6456272cd",
+        "name": "Fantasy",
+        "description": null
+      }
+    ],
+    "title": "Blindeer",
+    "description": "Four thousand years before the fall of the Republic.",
+    "directors": [
+      {
+        "id": "1a9e7e1f-393b-455d-a76f-d3ad2b33673e",
+        "full_name": "Casey Hudson"
+      }
+    ],
+    "actors_names": [
+      "Jennifer Hale",
+      "John Cygan",
+      "Rafael Ferrer",
+      "Raphael Sbarge"
+    ],
+    "writers_names": [
+      "Lukas Kristjanson",
+      "Michael Gallo"
+    ],
+    "actors": [
+      {
+        "id": "00395304-dd52-4c7b-be0d-c2cd7a495684",
+        "full_name": "Jennifer Hale",
+        "roles": [
+          "actor"
+        ],
+        "movies_ids":
+        [
+          "2a090dde-f688-46fe-a9f4-b781a985275e",
+          "32064806-8196-4037-b758-dd5b5d274b59",
+          "4fdffe40-e77f-4fb2-96ad-47319e3ddd2a",
+          "c4d36327-b330-4506-a63d-fef69d3f2f8a"
+        ]
+      }
+    ],
+    "writers": [
+      {
+        "id": "1bc82e3e-d9ea-4da0-a5ea-69ba20b94373",
+        "full_name": "Lukas Kristjanson"
+      },
+      {
+        "id": "1e8d746d-72d2-4da2-ad20-651154cfb158",
+        "full_name": "Michael Gallo"
+      }
+    ]
+  },
+  {
+    "id": "2a090dde-f688-46fe-a9f4-b781a9852757",
+    "imdb_rating": 6.8,
+     "genres": [
+      {
+        "id": "120a21cf-9097-479e-904a-13dd7198c1dd",
+        "name": "Adventure",
+        "description": null
+      },
+      {
+        "id": "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
+        "name": "Action",
+        "description": null
+      },
+      {
+        "id": "b92ef010-5e4c-4fd0-99d6-41b6456272cd",
+        "name": "Fantasy",
+        "description": null
+      }
+    ],
+    "title": "Shrek II",
+    "description": "Four thousand years before the fall of the Republic.",
+    "directors": [
+      {
+        "id": "1a9e7e1f-393b-455d-a76f-d3ad2b33673e",
+        "full_name": "Casey Hudson"
+      }
+    ],
+    "actors_names": [
+      "Jennifer Hale",
+      "John Cygan",
+      "Rafael Ferrer",
+      "Raphael Sbarge"
+    ],
+    "writers_names": [
+      "Lukas Kristjanson",
+      "Michael Gallo"
+    ],
+    "actors": [
+      {
+        "id": "00395304-dd52-4c7b-be0d-c2cd7a495684",
+        "full_name": "Jennifer Hale",
+        "roles": [
+          "actor"
+        ],
+        "movies_ids":
+        [
+          "2a090dde-f688-46fe-a9f4-b781a985275e",
+          "32064806-8196-4037-b758-dd5b5d274b59",
+          "4fdffe40-e77f-4fb2-96ad-47319e3ddd2a",
+          "c4d36327-b330-4506-a63d-fef69d3f2f8a"
+        ]
+      }
+    ],
+    "writers": [
+      {
+        "id": "1bc82e3e-d9ea-4da0-a5ea-69ba20b94373",
+        "full_name": "Lukas Kristjanson"
+      },
+      {
+        "id": "1e8d746d-72d2-4da2-ad20-651154cfb158",
+        "full_name": "Michael Gallo"
+      }
+    ]
+  }
+]

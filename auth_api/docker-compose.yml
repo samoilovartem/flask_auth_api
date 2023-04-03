@@ -1,0 +1,56 @@
+version: '3.8'
+
+x-env-file: &services-env-file
+  env_file:
+    - ./.env
+
+services:
+  auth_db:
+    image: postgres:15.2
+    container_name: auth_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    <<: *services-env-file
+    networks:
+      - backend
+    restart: always
+
+  auth_redis:
+    image: redis:7.0.9
+    container_name: auth_redis
+    networks:
+      - backend
+
+  auth_app:
+    container_name: auth_app
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    <<: *services-env-file
+    ports:
+      - "${AUTH_PORT}:{AUTH_CONTAINER_PORT}"
+    networks:
+      - backend
+    restart: always
+
+  auth_swagger:
+    image: swaggerapi/swagger-ui
+    container_name: auth_swagger
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./design:/usr/share/nginx/html/doc
+    environment:
+      API_URL: doc/openapi.yaml
+    depends_on:
+      - auth_app
+    profiles:
+      - testing
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    name: backend
+    driver: bridge

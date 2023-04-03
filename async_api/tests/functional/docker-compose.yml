@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  tests:
+    container_name: movies_tests
+    build:
+      context: .
+      dockerfile: src/Dockerfile
+    entrypoint: >
+      sh -c "python3 /tests/functional/utils/wait_for_es.py
+      && python3 /tests/functional/utils/wait_for_redis.py
+      && pytest /tests/functional/src"
+    env_file:
+      - ./.env
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  es_data:
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
