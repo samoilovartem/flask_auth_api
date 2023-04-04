@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "auth-sprint-1"
+version = "0.1.0"
+description = "Authentication module for our online cimena"
+authors = [
+    "Artem Samoilov <samoylovartem07@gmail.com>",
+    "Imran Dzhumabaev <safeisnotanoption@gmail.com>",
+    "Sergey Timoshenkov <serkoe2@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Flask-Security-Too = "^5.1.2"
+redis = "^4.4.4"
+Flask-SQLAlchemy = "^3.0.3"
+pydantic = "^1.10.7"
+orjson = "^3.8.9"
+alembic = "^1.10.2"
+Flask-Migrate = "^4.0.4"
+
+
+[tool.poetry.group.dev.dependencies]
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
