@@ -4,9 +4,9 @@ from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, Response, jsonify, make_response, request
 from flask_jwt_extended import get_jwt, jwt_required
 
-from src.core.containers import Container
-from src.core.utils import ServiceException, authenticate
-from src.services.user import UserService
+from core.containers import Container
+from core.utils import ServiceException, authenticate
+from services.user import UserService
 
 user = Blueprint('user', __name__, url_prefix='/user')
 

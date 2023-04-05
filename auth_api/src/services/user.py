@@ -4,12 +4,12 @@ from flask import Request, Response
 from flask_jwt_extended import create_access_token, create_refresh_token
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from auth_api.src.services.base import BaseService
-from src.core.settings import settings
-from src.core.utils import ServiceException
-from src.db.redis import redis
-from src.db.sql import db
-from src.models.models import (
+from services.base import BaseService
+from core.settings import settings
+from core.utils import ServiceException
+from db.redis import redis
+from db.sql import db
+from models.models import (
     AuthHistory,
     LoginRequest,
     ModifyRequest,

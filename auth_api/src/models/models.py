@@ -10,9 +10,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 
-from src.core.settings import settings
-from src.db.sql import db
-from src.models.create_partitions import (
+from core.settings import settings
+from db.sql import db
+from models.create_partitions import (
     create_partition_auth_history,
     create_partition_user,
 )

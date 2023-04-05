@@ -2,7 +2,7 @@ from dependency_injector import containers, providers
 from dependency_injector.ext import flask
 from flask import Flask
 
-from src.services.user import UserService
+from services.user import UserService
 
 
 class Container(containers.DeclarativeContainer):
