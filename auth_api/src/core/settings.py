@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     jwt_access: int = Field(15, env='JWT_ACCESS_EXPIRES')
     jwt_refresh: int = Field(32312, env='JWT_REFRESH_EXPIRES')
 
+    security_password_salt: str = Field(env='SECURITY_PASSWORD_SALT')
+    security_password_hash: str = Field(env='SECURITY_PASSWORD_HASH')
+
     class Config:
         env_file = os.path.join(BASE_DIR, '..', '.env')
 

@@ -16,7 +16,7 @@ def create_app():
     setup_app(app, settings)
     setup_database(app)
     register_blueprints(app)
-    setup_security(app)
+    setup_security(app, settings)
     return app
 
 
@@ -34,9 +34,9 @@ def setup_database(app):
     db.init_app(app)
 
 
-def setup_security(app):
-    app.config['SECURITY_PASSWORD_SALT'] = 'cfvgjbhkladsfadfagfwrs'
-    app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'
+def setup_security(app, app_settings):
+    app.config['SECURITY_PASSWORD_SALT'] = app_settings.security_password_salt
+    app.config['SECURITY_PASSWORD_HASH'] = app_settings.security_password_hash
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security = Security(app, user_datastore)
 
