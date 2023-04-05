@@ -3,7 +3,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 
-from databases import db
+from src.db.databases import db
 
 config = context.config
 
