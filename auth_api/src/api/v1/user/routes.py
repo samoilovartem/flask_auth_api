@@ -1,10 +1,11 @@
 from http import HTTPStatus
 
-from core.containers import Container
-from core.utils import authenticate
 from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, Response, jsonify, make_response, request
 from flask_jwt_extended import get_jwt, jwt_required
+
+from core.containers import Container
+from core.utils import authenticate
 from services.user import UserService
 
 user = Blueprint('user', __name__, url_prefix='/user')

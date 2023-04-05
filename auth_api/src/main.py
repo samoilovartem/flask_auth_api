@@ -1,13 +1,12 @@
 from flask_jwt_extended import JWTManager
-
+from flask_security import Security, SQLAlchemyUserDatastore
 
 from api.common import api
-from db.sql import db
 from core.containers import Container
-from core.fast_json import ORJSONEncoder, ORJSONDecoder
+from core.fast_json import ORJSONDecoder, ORJSONEncoder
 from core.settings import settings
-from flask_security import Security, SQLAlchemyUserDatastore
-from models.models import User, Role
+from db.sql import db
+from models.models import Role, User
 
 
 def create_app():

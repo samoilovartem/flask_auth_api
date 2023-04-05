@@ -1,4 +1,4 @@
-from orjson import loads, dumps
+from orjson import dumps, loads
 
 
 class ORJSONDecoder:

@@ -1,14 +1,16 @@
 from typing import Union
 
-from core.settings import settings
-from db.sql import db
-from db.redis import redis
 from flask import Request, Response
-from core.utils import ServiceException
 from flask_jwt_extended import create_access_token, create_refresh_token
-from models.models import LoginRequest, ModifyRequest, SignupRequest, User, Token, AuthHistory
-from services.base import BaseService
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from core.settings import settings
+from core.utils import ServiceException
+from db.redis import redis
+from db.sql import db
+from models.models import (AuthHistory, LoginRequest, ModifyRequest,
+                           SignupRequest, Token, User)
+from services.base import BaseService
 
 
 def generate_tokens(user: User):

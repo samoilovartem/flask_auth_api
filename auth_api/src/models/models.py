@@ -2,16 +2,17 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from flask_security import UserMixin, RoleMixin, utils
-from sqlalchemy import event, DefaultClause, FetchedValue, text
+from flask_security import RoleMixin, UserMixin, utils
+from pydantic import BaseModel, EmailStr, constr
+from sqlalchemy import DefaultClause, FetchedValue, event, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
-from pydantic import BaseModel, EmailStr, constr
-from core.settings import settings
 
-from models.create_partitions import create_partition_auth_history, create_partition_user
+from core.settings import settings
 from db.sql import db
+from models.create_partitions import (create_partition_auth_history,
+                                      create_partition_user)
 
 
 class RoleType(str, Enum):
