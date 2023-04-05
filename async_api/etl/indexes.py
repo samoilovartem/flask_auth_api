@@ -1,5 +1,5 @@
 SETTINGS_BODY = {
-    "core": {
+    "settings": {
         "refresh_interval": "1s",
         "analysis": {
             "filter": {

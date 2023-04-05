@@ -8,8 +8,8 @@ from fastapi.responses import ORJSONResponse
 from api import router
 from core.config import Config
 from core.custom_logger import CustomLogger
-from databases.elastic import es_manager
-from databases.redis import redis_manager
+from db.elastic import es_manager
+from db.redis import redis_manager
 
 logger = logging.getLogger(__name__)
 

@@ -10,8 +10,8 @@ from pydantic import BaseModel
 from core.config import Config
 from data_services.cache import Cache, RedisCache
 from data_services.database import Database, ElasticSearch
-from databases.elastic import es_manager
-from databases.redis import redis_manager
+from db.elastic import es_manager
+from db.redis import redis_manager
 from models.schemas import GenreDetail
 from services.common import MovieCommonService
 

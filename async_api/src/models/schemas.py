@@ -116,7 +116,7 @@ class MovieDetail(MovieList):
             GenreDetail(
                 id='0e73f787-566f-4b83-816f-7805b32003aa',
                 name='Science fiction',
-                description='Science fiction genre is a media category that features futuristic core',
+                description='Science fiction genre is a media category that features futuristic settings',
             ),
         ],
         default=[],
