@@ -1,10 +1,9 @@
 from typing import Optional
 
 from backoff import expo, on_exception
-from elasticsearch import AsyncElasticsearch, ConnectionError
-
 from core.config import Config
 from core.custom_logger import CustomLogger
+from elasticsearch import AsyncElasticsearch, ConnectionError
 
 logger = CustomLogger.make_logger()
 

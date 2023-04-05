@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Generator
 
 import psycopg2
+
 from backoff import expo, on_exception
 from configs import loguru_config, settings_config
 from loguru import logger

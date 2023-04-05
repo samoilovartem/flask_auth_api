@@ -11,7 +11,9 @@ class Settings(BaseSettings):
 
     sqlalchemy_database_uri: str = Field(env='SQLALCHEMY_DATABASE_URI')
 
-    postgres_db: str = Field('postgresql://app:123qwe@localhost/movies_auth', env='POSTGRES_DB')
+    postgres_db: str = Field(
+        'postgresql://app:123qwe@localhost/movies_auth', env='POSTGRES_DB'
+    )
 
     redis_host: str = Field('localhost', env='REDIS_HOST')
     redis_port: int = Field(6379, env='REDIS_PORT')

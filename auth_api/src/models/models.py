@@ -1,18 +1,21 @@
 import uuid
+
 from datetime import datetime
 from enum import Enum
 
 from flask_security import RoleMixin, UserMixin, utils
 from pydantic import BaseModel, EmailStr, constr
-from sqlalchemy import DefaultClause, FetchedValue, event, text
+from sqlalchemy import FetchedValue, event
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 
-from core.settings import settings
-from db.sql import db
-from models.create_partitions import (create_partition_auth_history,
-                                      create_partition_user)
+from src.core.settings import settings
+from src.db.sql import db
+from src.models.create_partitions import (
+    create_partition_auth_history,
+    create_partition_user,
+)
 
 
 class RoleType(str, Enum):
@@ -29,7 +32,13 @@ class TimeStampedMixin:
 
 
 class UUIDMixin:
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False,
+    )
 
 
 class User(UUIDMixin, TimeStampedMixin, UserMixin, db.Model):
@@ -80,7 +89,9 @@ class UserRoleAssignRequest(BaseModel):
 class SocialAccount(UUIDMixin, db.Model):
     __tablename__ = 'social_accounts'
     __table_args__ = {'schema': settings.postgres_db}
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
+    user_id = db.Column(
+        UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
+    )
     social_id = db.Column(db.String(255), nullable=False)
     social_provider_name = db.Column(db.String(50), nullable=False)
 
@@ -91,14 +102,15 @@ class SocialAccount(UUIDMixin, db.Model):
 class AuthHistory(UUIDMixin, TimeStampedMixin, db.Model):
     __tablename__ = 'auth_history'
     __table_args__ = {'schema': settings.postgres_db}
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
+    user_id = db.Column(
+        UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
+    )
     ip_address = db.Column(db.String(50), nullable=False)
     user_agent = db.Column(db.String(255), nullable=False)
     is_successful = db.Column(db.Boolean, default=False, nullable=False)
     device = db.Column(db.String(255))
     auth_event_type = db.Column(db.String, nullable=False)
-    auth_event_time = db.Column(db.DateTime(timezone=True),
-                                server_default=func.now())
+    auth_event_time = db.Column(db.DateTime(timezone=True), server_default=func.now())
     auth_event_fingerprint = db.Column(db.String, nullable=False)
 
     def __repr__(self):
@@ -118,8 +130,12 @@ class Role(UUIDMixin, TimeStampedMixin, RoleMixin, db.Model):
 class UserRole(UUIDMixin, db.Model):
     __tablename__ = 'user_roles'
     __table_args__ = {'schema': settings.postgres_db}
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
-    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('roles.id', ondelete='CASCADE'))
+    user_id = db.Column(
+        UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
+    )
+    role_id = db.Column(
+        UUID(as_uuid=True), db.ForeignKey('roles.id', ondelete='CASCADE')
+    )
 
 
 event.listen(AuthHistory.__table__, 'after_create', create_partition_auth_history)
@@ -132,14 +148,14 @@ class Token(UUIDMixin, db.Model):
     token_owner_id = db.Column(
         UUID(as_uuid=True),
         db.ForeignKey(f'{settings.postgres_db}.users.id'),
-        nullable=False)
+        nullable=False,
+    )
     token_value = db.Column(db.String, nullable=False)
     token_used = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime(timezone=True),
-                           server_default=func.now())
-    expires_at = db.Column(db.DateTime(timezone=True),
-                           nullable=False,
-                           server_default=FetchedValue())
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    expires_at = db.Column(
+        db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
+    )
 
     def __repr__(self):
         return f'<Token {self.token_owner_id, self.token_value}>'

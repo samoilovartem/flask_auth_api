@@ -1,6 +1,6 @@
 import json
+
 from abc import ABC, abstractmethod
-from typing import Any
 from uuid import UUID
 
 from aioredis import Redis

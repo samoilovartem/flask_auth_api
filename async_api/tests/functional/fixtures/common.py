@@ -3,8 +3,8 @@ import asyncio
 import aiohttp
 import aioredis
 import pytest
-from elasticsearch import AsyncElasticsearch
 
+from elasticsearch import AsyncElasticsearch
 from tests.functional.settings import test_settings
 from tests.functional.utils.schemas import HTTPResponse
 

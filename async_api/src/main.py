@@ -2,14 +2,14 @@ import asyncio
 import logging
 
 import uvicorn
-from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
 
 from api import router
 from core.config import Config
 from core.custom_logger import CustomLogger
 from db.elastic import es_manager
 from db.redis import redis_manager
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 
 logger = logging.getLogger(__name__)
 

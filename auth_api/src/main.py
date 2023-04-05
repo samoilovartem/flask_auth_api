@@ -1,11 +1,9 @@
-from flask_jwt_extended import JWTManager
-from flask_security import Security, SQLAlchemyUserDatastore
-
 from api.common import api
 from core.containers import Container
-from core.fast_json import ORJSONDecoder, ORJSONEncoder
 from core.settings import settings
 from db.sql import db
+from flask_jwt_extended import JWTManager
+from flask_security import Security, SQLAlchemyUserDatastore
 from models.models import Role, User
 
 
@@ -38,7 +36,7 @@ def setup_security(app, app_settings):
     app.config['SECURITY_PASSWORD_SALT'] = app_settings.security_password_salt
     app.config['SECURITY_PASSWORD_HASH'] = app_settings.security_password_hash
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, user_datastore)
+    Security(app, user_datastore)
 
 
 def register_blueprints(app):

@@ -1,12 +1,11 @@
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
-
 from core.config import Config
 from data_services.cache import Cache
 from data_services.database import Database
 from models.schemas import MovieList
+from pydantic import BaseModel
 
 
 class MovieCommonService:

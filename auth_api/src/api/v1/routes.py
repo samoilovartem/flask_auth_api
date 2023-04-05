@@ -1,6 +1,5 @@
-from flask import Blueprint, jsonify
-
 from api.v1.user.routes import user
+from flask import Blueprint, jsonify
 
 v1 = Blueprint('v1', __name__, url_prefix='/v1')
 v1.register_blueprint(user)

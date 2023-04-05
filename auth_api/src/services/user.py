@@ -4,39 +4,41 @@ from flask import Request, Response
 from flask_jwt_extended import create_access_token, create_refresh_token
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from core.settings import settings
-from core.utils import ServiceException
-from db.redis import redis
-from db.sql import db
-from models.models import (AuthHistory, LoginRequest, ModifyRequest,
-                           SignupRequest, Token, User)
-from services.base import BaseService
+from auth_api.src.services.base import BaseService
+from src.core.settings import settings
+from src.core.utils import ServiceException
+from src.db.redis import redis
+from src.db.sql import db
+from src.models.models import (
+    AuthHistory,
+    LoginRequest,
+    ModifyRequest,
+    SignupRequest,
+    Token,
+    User,
+)
 
 
 def generate_tokens(user: User):
-    """ Create new access and refresh tokens for the user"""
-    user_data = {'user_id': user.id, }
-    access_token = create_access_token(
-        identity=user.id, additional_claims=user_data
-    )
-    refresh_token = create_refresh_token(
-        identity=user.id, additional_claims=user_data
-    )
+    """Create new access and refresh tokens for the user"""
+    user_data = {
+        'user_id': user.id,
+    }
+    access_token = create_access_token(identity=user.id, additional_claims=user_data)
+    refresh_token = create_refresh_token(identity=user.id, additional_claims=user_data)
     return access_token, refresh_token
 
 
 def authenticate(access_token) -> None:
     """Check that access token is fresh"""
     if not redis.get(access_token) == b'':
-        raise ServiceException(error_code='ACCESS_TOKEN_EXPIRED',
-                               message='Access token has expired')
+        raise ServiceException(
+            error_code='ACCESS_TOKEN_EXPIRED', message='Access token has expired'
+        )
 
 
 class UserService(BaseService):
-    def create_user(self,
-                    username: str,
-                    password: str,
-                    email: str):
+    def create_user(self, username: str, password: str, email: str):
         existing_user: User = User.query.filter(
             (User.username == username) | (User.email == email)
         ).first()
@@ -52,51 +54,43 @@ class UserService(BaseService):
 
         password_hash = generate_password_hash(password)
 
-        user = User(username=username,
-                    password=password_hash,
-                    email=email)
+        user = User(username=username, password=password_hash, email=email)
         db.session.add(user)
         db.session.commit()
         return user
 
-    def register_user(self,
-                      username: str,
-                      password: str,
-                      email: str,
-                      user_info: dict):
-        """ Check that a new user with these credentials can be added,
-        if so, create the user and return its access and refresh tokens """
+    def register_user(self, username: str, password: str, email: str, user_info: dict):
+        """Check that a new user with these credentials can be added,
+        if so, create the user and return its access and refresh tokens"""
         user = self.create_user(username, password, email)
         access_token, refresh_token = generate_tokens(user)
-        self.commit_authentication(user,
-                                   'signup',
-                                   access_token,
-                                   refresh_token,
-                                   user_info)
+        self.commit_authentication(
+            user, 'signup', access_token, refresh_token, user_info
+        )
 
         return access_token, refresh_token
 
-    def login(self, username: str, password: str, user_info: dict) \
-            -> tuple[str, str]:
-
-        user: User = User.query.filter(
-            User.username == username
-        ).first()
+    def login(self, username: str, password: str, user_info: dict) -> tuple[str, str]:
+        user: User = User.query.filter(User.username == username).first()
 
         if not user:
-            raise ServiceException(error_code=self.USER_NOT_FOUND.code,
-                                   message=self.USER_NOT_FOUND.message)
+            raise ServiceException(
+                error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
+            )
 
         if not check_password_hash(user.password, password):
-            raise ServiceException(error_code=self.WRONG_PASSWORD.code,
-                                   message=self.WRONG_PASSWORD.message)
+            raise ServiceException(
+                error_code=self.WRONG_PASSWORD.code, message=self.WRONG_PASSWORD.message
+            )
 
         access_token, refresh_token = generate_tokens(user)
-        self.commit_authentication(user=user,
-                                   event_type='login',
-                                   access_token=access_token,
-                                   refresh_token=refresh_token,
-                                   user_info=user_info)
+        self.commit_authentication(
+            user=user,
+            event_type='login',
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user_info=user_info,
+        )
 
         return access_token, refresh_token
 
@@ -104,23 +98,29 @@ class UserService(BaseService):
         user: User = User.query.get(user_id)
 
         if not user:
-            raise ServiceException(error_code=self.USER_NOT_FOUND.code,
-                                   message=self.USER_NOT_FOUND.message)
+            raise ServiceException(
+                error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
+            )
 
         current_refresh_token = Token.query.filter(
-            Token.token_value == refresh_token).first()
+            Token.token_value == refresh_token
+        ).first()
         if not current_refresh_token:
-            raise ServiceException(error_code=self.INVALID_REFRESH_TOKEN.code,
-                                   message=self.INVALID_REFRESH_TOKEN.message)
+            raise ServiceException(
+                error_code=self.INVALID_REFRESH_TOKEN.code,
+                message=self.INVALID_REFRESH_TOKEN.message,
+            )
 
         access_token, refresh_token = generate_tokens(user)
         db.session.delete(current_refresh_token)
         db.session.commit()
 
-        self.commit_authentication(user=user,
-                                   event_type='refresh',
-                                   access_token=access_token,
-                                   refresh_token=refresh_token)
+        self.commit_authentication(
+            user=user,
+            event_type='refresh',
+            access_token=access_token,
+            refresh_token=refresh_token,
+        )
 
         return access_token, refresh_token
 
@@ -130,14 +130,18 @@ class UserService(BaseService):
         authenticate(access_token)
 
         if not user:
-            raise ServiceException(error_code=self.USER_NOT_FOUND.code,
-                                   message=self.USER_NOT_FOUND.message)
+            raise ServiceException(
+                error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
+            )
 
         current_refresh_token = Token.query.filter(
-            Token.token_value == refresh_token).first()
+            Token.token_value == refresh_token
+        ).first()
         if not current_refresh_token:
-            raise ServiceException(error_code=self.INVALID_REFRESH_TOKEN.code,
-                                   message=self.INVALID_REFRESH_TOKEN.message)
+            raise ServiceException(
+                error_code=self.INVALID_REFRESH_TOKEN.code,
+                message=self.INVALID_REFRESH_TOKEN.message,
+            )
         # Delete the access token
         db.session.delete(current_refresh_token)
         db.session.commit()
@@ -154,40 +158,43 @@ class UserService(BaseService):
 
         result = []
         for event in history:
-            result.append({'uuid': event.auth_event_id,
-                           'time': event.auth_event_time,
-                           'fingerprint': event.auth_event_fingerprint})
+            result.append(
+                {
+                    'uuid': event.auth_event_id,
+                    'time': event.auth_event_time,
+                    'fingerprint': event.auth_event_fingerprint,
+                }
+            )
         return result
 
     @staticmethod
-    def commit_authentication(user: User,
-                              event_type: str,
-                              access_token: str,
-                              refresh_token: str,
-                              user_info: dict = None):
-        """ Finalize successful authentication saving the details."""
+    def commit_authentication(
+        user: User,
+        event_type: str,
+        access_token: str,
+        refresh_token: str,
+        user_info: dict = None,
+    ):
+        """Finalize successful authentication saving the details."""
         token = Token(token_owner_id=user.id, token_value=refresh_token)
         db.session.add(token)
 
         if event_type == 'login':
-            auth_event = AuthHistory(user_id=user.id,
-                                     auth_event_type=event_type,
-                                     auth_event_fingerprint=str(user_info))
+            auth_event = AuthHistory(
+                user_id=user.id,
+                auth_event_type=event_type,
+                auth_event_fingerprint=str(user_info),
+            )
             db.session.add(auth_event)
 
         db.session.commit()
-        redis.set(name=access_token,
-                  value='',
-                  ex=settings.jwt_access)
+        redis.set(name=access_token, value='', ex=settings.jwt_access)
 
-    def validate_signup(
-            self, request: Request) -> Union[SignupRequest, Response]:
+    def validate_signup(self, request: Request) -> Union[SignupRequest, Response]:
         return self._validate(request, SignupRequest)
 
-    def validate_login(
-            self, request: Request) -> Union[LoginRequest, Response]:
+    def validate_login(self, request: Request) -> Union[LoginRequest, Response]:
         return self._validate(request, LoginRequest)
 
-    def validate_modify(
-            self, request: Request) -> Union[ModifyRequest, Response]:
+    def validate_modify(self, request: Request) -> Union[ModifyRequest, Response]:
         return self._validate(request, ModifyRequest)

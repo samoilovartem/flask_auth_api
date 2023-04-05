@@ -1,7 +1,6 @@
 from backoff import expo, on_exception
 from loguru import logger
 from redis import ConnectionError, Redis
-
 from tests.functional.settings import test_settings
 from tests.functional.utils.loguru_config import loguru_config
 

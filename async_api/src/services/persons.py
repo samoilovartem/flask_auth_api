@@ -3,16 +3,15 @@ from typing import Optional
 from uuid import UUID
 
 from aioredis import Redis
-from elasticsearch import AsyncElasticsearch
-from fastapi import Depends
-from pydantic import BaseModel
-
 from core.config import Config
 from data_services.cache import Cache, RedisCache
 from data_services.database import Database, ElasticSearch
 from db.elastic import es_manager
 from db.redis import redis_manager
+from elasticsearch import AsyncElasticsearch
+from fastapi import Depends
 from models.schemas import PersonDetail
+from pydantic import BaseModel
 from services.common import MovieCommonService
 
 

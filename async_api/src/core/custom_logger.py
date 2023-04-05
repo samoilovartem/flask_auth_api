@@ -1,10 +1,10 @@
 import logging
 import sys
+
 from pathlib import Path
 
-from loguru import logger
-
 from core.config import Config
+from loguru import logger
 
 
 class InterceptHandler(logging.Handler):

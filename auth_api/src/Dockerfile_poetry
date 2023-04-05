@@ -20,4 +20,3 @@ RUN poetry install --no-dev
 COPY src .
 
 CMD ["python", "main.py"]
-

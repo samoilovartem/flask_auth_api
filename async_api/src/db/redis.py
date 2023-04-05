@@ -1,12 +1,12 @@
 from typing import Optional
 
 import aioredis
+
 from aioredis import Redis
 from backoff import expo, on_exception
-from redis import ConnectionError
-
 from core.config import Config
 from core.custom_logger import CustomLogger
+from redis import ConnectionError
 
 logger = CustomLogger.make_logger()
 

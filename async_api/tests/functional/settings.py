@@ -6,7 +6,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestSettings(BaseSettings):
-
     REDIS_HOST: str = Field('localhost', env='REDIS_HOST')
     REDIS_PORT: int = Field(6379, env='REDIS_PORT')
 

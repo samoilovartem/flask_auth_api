@@ -13,10 +13,7 @@ fileConfig(config.config_file_name)
 
 target_metadata = db.metadata
 
-config.set_main_option(
-    'sqlalchemy.url',
-    str(db.get_engine().url).replace('%', '%%')
-)
+config.set_main_option('sqlalchemy.url', str(db.get_engine().url).replace('%', '%%'))
 
 
 def run_migrations_offline():
