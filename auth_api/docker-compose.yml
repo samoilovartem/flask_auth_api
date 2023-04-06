@@ -6,11 +6,15 @@ x-env-file: &services-env-file
 
 services:
   auth_db:
-    image: postgres:15.2
     container_name: auth_db
+    build:
+      context: .
+      dockerfile: ./migrations/Dockerfile
     volumes:
       - postgres_data:/var/lib/postgresql/data
     <<: *services-env-file
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}"
     networks:
       - backend
     restart: always
@@ -18,6 +22,8 @@ services:
   auth_redis:
     image: redis:7.0.9
     container_name: auth_redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_CONTAINER_PORT}"
     networks:
       - backend
 
@@ -28,7 +34,7 @@ services:
       dockerfile: Dockerfile
     <<: *services-env-file
     ports:
-      - "${AUTH_PORT}:{AUTH_CONTAINER_PORT}"
+      - "${AUTH_PORT}:${AUTH_CONTAINER_PORT}"
     networks:
       - backend
     restart: always

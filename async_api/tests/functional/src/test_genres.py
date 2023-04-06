@@ -1,9 +1,6 @@
 from http import HTTPStatus
 
-from tests.functional.utils.helpers import (
-    extract_genre,
-    extract_genres
-)
+from tests.functional.utils.helpers import extract_genre, extract_genres
 
 pytest_plugins = "tests.functional.fixtures.genres"
 

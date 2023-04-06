@@ -1,8 +1,8 @@
 import json
+
 from uuid import UUID
 
 from pydantic import BaseModel
-
 from tests.functional.settings import BASE_DIR
 from tests.functional.utils.schemas import (
     GenreDetail,

@@ -1,9 +1,8 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
-
 from api.v1.utils import raise_exception_if_not_found, to_response_model
 from core.config import Config
+from fastapi import APIRouter, Depends, Query
 from models.schemas import PersonDetail
 from services.persons import PersonService, get_service
 

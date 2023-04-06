@@ -1,9 +1,6 @@
 from http import HTTPStatus
 
-from tests.functional.utils.helpers import (
-    extract_person,
-    extract_persons,
-)
+from tests.functional.utils.helpers import extract_person, extract_persons
 
 pytest_plugins = "tests.functional.fixtures.persons"
 

@@ -1,7 +1,6 @@
 from backoff import expo, on_exception
 from elasticsearch import Elasticsearch
 from loguru import logger
-
 from tests.functional.settings import test_settings
 from tests.functional.utils.loguru_config import loguru_config
 

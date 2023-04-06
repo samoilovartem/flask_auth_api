@@ -1,9 +1,6 @@
 from http import HTTPStatus
 
-from tests.functional.utils.helpers import (
-    extract_movie,
-    extract_movies,
-)
+from tests.functional.utils.helpers import extract_movie, extract_movies
 
 pytest_plugins = "tests.functional.fixtures.movies"
 
@@ -187,7 +184,7 @@ async def test_movies_popular_in_genre(make_get_request, redis_client):
     )
     movies = await extract_movies(response)
     cache = await redis_client.get(
-        f'popular_genre:120a21cf-9097-479e-904a-13dd7198c1dd:movies'
+        'popular_genre:120a21cf-9097-479e-904a-13dd7198c1dd:movies'
     )
 
     assert response.status == HTTPStatus.OK

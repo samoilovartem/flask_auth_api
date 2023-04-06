@@ -1,4 +1,5 @@
 import time
+
 from datetime import datetime, timezone
 
 from configs import es_config, loguru_config, pg_config, settings_config
