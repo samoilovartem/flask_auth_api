@@ -1,7 +1,7 @@
 from api.common import api
 from core.containers import Container
 from core.settings import settings
-from db.sql import db, migration
+from db.sql import create_schema_if_not_exists, db, migration
 from flask_jwt_extended import JWTManager
 from flask_security import Security, SQLAlchemyUserDatastore
 from models.models import Role, User
@@ -32,6 +32,9 @@ def setup_app(app, app_settings):
 
 
 def setup_database(app):
+    create_schema_if_not_exists(
+        app.config['SQLALCHEMY_DATABASE_URI'], settings.postgres_schema
+    )
     db.init_app(app)
     migration.init_app(app, db)
 

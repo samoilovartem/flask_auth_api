@@ -115,4 +115,3 @@ src/.idea/
 ### Docker ###
 .env
 .env.dev
-auth_api/src/migrations/
