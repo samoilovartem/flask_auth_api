@@ -1,7 +1,7 @@
 from api.common import api
 from core.containers import Container
 from core.settings import settings
-from db.sql import db
+from db.sql import db, migration
 from flask_jwt_extended import JWTManager
 from flask_security import Security, SQLAlchemyUserDatastore
 from models.models import Role, User
@@ -24,12 +24,16 @@ def setup_app(app, app_settings):
     app.config['DEBUG'] = app_settings.flask_debug
     app.config['SECRET_KEY'] = app_settings.flask_secret_key
     app.config['SQLALCHEMY_DATABASE_URI'] = app_settings.sqlalchemy_database_uri
+    app.config[
+        'SQLALCHEMY_TRACK_MODIFICATIONS'
+    ] = app_settings.sqlalchemy_track_modifications
     app.config['JWT_SECRET_KEY'] = app_settings.jwt_secret_key
     JWTManager(app)
 
 
 def setup_database(app):
     db.init_app(app)
+    migration.init_app(app, db)
 
 
 def setup_security(app, app_settings):
@@ -41,8 +45,3 @@ def setup_security(app, app_settings):
 
 def register_blueprints(app):
     app.register_blueprint(api, url_prefix='/api')
-
-
-if __name__ == '__main__':
-    application = create_app()
-    application.run(host='0.0.0.0', port=8000, debug=True)

@@ -1,14 +1,11 @@
 from typing import Union
 
-from flask import Request, Response
-from flask_jwt_extended import create_access_token, create_refresh_token
-from werkzeug.security import check_password_hash, generate_password_hash
-
-from services.base import BaseService
 from core.settings import settings
 from core.utils import ServiceException
 from db.redis import redis
 from db.sql import db
+from flask import Request, Response
+from flask_jwt_extended import create_access_token, create_refresh_token
 from models.models import (
     AuthHistory,
     LoginRequest,
@@ -17,6 +14,8 @@ from models.models import (
     Token,
     User,
 )
+from services.base import BaseService
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 def generate_tokens(user: User):

@@ -7,9 +7,7 @@ x-env-file: &services-env-file
 services:
   auth_db:
     container_name: auth_db
-    build:
-      context: .
-      dockerfile: ./migrations/Dockerfile
+    image: postgres:15.2
     volumes:
       - postgres_data:/var/lib/postgresql/data
     <<: *services-env-file
@@ -35,6 +33,8 @@ services:
     <<: *services-env-file
     ports:
       - "${AUTH_PORT}:${AUTH_CONTAINER_PORT}"
+    volumes:
+      - ./src/migrations:/app/migrations
     networks:
       - backend
     restart: always

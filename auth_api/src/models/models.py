@@ -18,7 +18,7 @@ from sqlalchemy.sql import func
 
 
 class RoleType(str, Enum):
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     user = 'user'
     superuser = 'superuser'
 
@@ -42,17 +42,19 @@ class UUIDMixin:
 
 class User(UUIDMixin, TimeStampedMixin, UserMixin, db.Model):
     __tablename__ = 'users'
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
-    # roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy=True))
-    roles = db.Column(db.String(50), nullable=True)
+    roles = db.relationship(
+        'Role', secondary='user_roles', backref=db.backref('users', lazy=True)
+    )
+    # roles = db.Column(db.String(50), nullable=True)
     is_totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
     two_factor_secret = db.Column(db.String(255))
-    # social_accounts = db.relationship('SocialAccount', backref='user', lazy=True)
-    social_accounts = db.Column(db.String(50), nullable=True)
+    social_accounts = db.relationship('SocialAccount', backref='user', lazy=True)
+    # social_accounts = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -88,7 +90,7 @@ class UserRoleAssignRequest(BaseModel):
 
 class SocialAccount(UUIDMixin, db.Model):
     __tablename__ = 'social_accounts'
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     user_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
     )
@@ -101,7 +103,7 @@ class SocialAccount(UUIDMixin, db.Model):
 
 class AuthHistory(UUIDMixin, TimeStampedMixin, db.Model):
     __tablename__ = 'auth_history'
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     user_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
     )
@@ -119,7 +121,7 @@ class AuthHistory(UUIDMixin, TimeStampedMixin, db.Model):
 
 class Role(UUIDMixin, TimeStampedMixin, RoleMixin, db.Model):
     __tablename__ = 'roles'
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     name = db.Column(db.Enum(RoleType), unique=True)
     description = db.Column(db.String(255))
 
@@ -129,7 +131,7 @@ class Role(UUIDMixin, TimeStampedMixin, RoleMixin, db.Model):
 
 class UserRole(UUIDMixin, db.Model):
     __tablename__ = 'user_roles'
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     user_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
     )
@@ -144,10 +146,10 @@ event.listen(User.__table__, 'after_create', create_partition_user)
 
 class Token(UUIDMixin, db.Model):
     __tablename__ = 'tokens'
-    __table_args__ = {'schema': settings.postgres_db}
+    __table_args__ = {'schema': settings.postgres_schema}
     token_owner_id = db.Column(
         UUID(as_uuid=True),
-        db.ForeignKey(f'{settings.postgres_db}.users.id'),
+        db.ForeignKey(f'{settings.postgres_schema}.users.id'),
         nullable=False,
     )
     token_value = db.Column(db.String, nullable=False)

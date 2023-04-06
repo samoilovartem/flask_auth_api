@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 
 class SocialProvider(ABC):
-
     @abstractmethod
     def name(self, *args, **kwargs) -> str:
         pass
