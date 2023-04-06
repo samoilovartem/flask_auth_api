@@ -3,25 +3,24 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
+from core.settings import settings
+from db.sql import db
 from flask_security import RoleMixin, UserMixin, utils
+from models.create_partitions import (
+    create_partition_auth_history,
+    create_partition_user,
+)
 from pydantic import BaseModel, EmailStr, constr
 from sqlalchemy import FetchedValue, event
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 
-from core.settings import settings
-from db.sql import db
-from models.create_partitions import (
-    create_partition_auth_history,
-    create_partition_user,
-)
-
 
 class RoleType(str, Enum):
     __table_args__ = {'schema': settings.postgres_db}
-    user = "user"
-    superuser = "superuser"
+    user = 'user'
+    superuser = 'superuser'
 
 
 class TimeStampedMixin:
@@ -46,6 +45,7 @@ class User(UUIDMixin, TimeStampedMixin, UserMixin, db.Model):
     __table_args__ = {'schema': settings.postgres_db}
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True)
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
     # roles = db.relationship('Role', secondary='user_roles', backref=db.backref('users', lazy=True))
     roles = db.Column(db.String(50), nullable=True)

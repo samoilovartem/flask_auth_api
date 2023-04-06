@@ -2,7 +2,7 @@ from core.utils import ServiceException
 from socials.interface import SocialProvider
 from socials.providers.google import GoogleAuthProvider
 
-HANDLER_URL = "http://localhost:8000/api/v1/social/handler/"
+HANDLER_URL = 'http://localhost:8000/api/v1/social/handler/'
 
 providers = [GoogleAuthProvider]
 
@@ -21,7 +21,9 @@ class SocialAuthService:
     def get_provider_by_name(self, name: str) -> SocialProvider:
         if name.lower() in self.providers:
             return self.providers[name]
-        ServiceException("Social Provider not found")
+        raise ServiceException(
+            message='Social Provider not found', error_code='NOT FOUND'
+        )
 
 
 social_auth_service = SocialAuthService()

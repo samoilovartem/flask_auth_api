@@ -10,7 +10,7 @@ class ORJSONDecoder:
         try:
             return loads(data)
         except Exception as e:
-            raise ValueError(f"Error decoding data: {e}") from e
+            raise ValueError(f'Error decoding data: {e}') from e
 
 
 class ORJSONEncoder:
@@ -22,4 +22,4 @@ class ORJSONEncoder:
         try:
             return dumps(data).decode('utf-8')
         except Exception as e:
-            raise ValueError(f"Error encoding object: {e}") from e
+            raise ValueError(f'Error encoding object: {e}') from e

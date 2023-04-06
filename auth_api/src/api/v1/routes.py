@@ -1,6 +1,6 @@
+from api.v1.social.routes import social
 from api.v1.user.routes import user
 from flask import Blueprint, jsonify
-from api.v1.social.routes import social
 
 v1 = Blueprint('v1', __name__, url_prefix='/v1')
 v1.register_blueprint(user)
@@ -9,4 +9,4 @@ v1.register_blueprint(social)
 
 @v1.route('/')
 def index():
-    return jsonify(result="Hello, World!")
+    return jsonify(result='Hello, World!')

@@ -1,17 +1,16 @@
 from http import HTTPStatus
 
+from core.containers import Container
+from core.utils import ServiceException, authenticate
 from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, Response, jsonify, make_response, request
 from flask_jwt_extended import get_jwt, jwt_required
-
-from core.containers import Container
-from core.utils import ServiceException, authenticate
 from services.user import UserService
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
 
-@user.route('/signup', methods=["POST"])
+@user.route('/signup', methods=['POST'])
 @inject
 def signup(user_service: UserService = Provide[Container.user_service]):
     """Creates a new user"""
@@ -33,7 +32,7 @@ def signup(user_service: UserService = Provide[Container.user_service]):
     )
 
 
-@user.route('/auth', methods=["POST"])
+@user.route('/auth', methods=['POST'])
 @inject
 def login(user_service: UserService = Provide[Container.user_service]):
     """Log user in using username and password."""
@@ -52,7 +51,7 @@ def login(user_service: UserService = Provide[Container.user_service]):
     )
 
 
-@user.route('/auth', methods=["PUT"])
+@user.route('/auth', methods=['PUT'])
 @jwt_required(refresh=True)
 @inject
 def refresh(user_service: UserService = Provide[Container.user_service]):
@@ -77,7 +76,7 @@ def refresh(user_service: UserService = Provide[Container.user_service]):
     )
 
 
-@user.route('/auth/logout', methods=["POST"])
+@user.route('/auth/logout', methods=['POST'])
 @jwt_required()
 @authenticate()
 @inject
@@ -95,7 +94,7 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
     )
 
 
-@user.route('/auth', methods=["PATCH"])
+@user.route('/auth', methods=['PATCH'])
 @jwt_required()
 @authenticate()
 @inject
