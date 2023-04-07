@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 
 from core.settings import settings
-from db.sql import db
+from db.sql import db_manager
 from flask_security import RoleMixin, UserMixin, utils
 from models.create_partitions import (
     create_partition_auth_history,
@@ -15,6 +15,8 @@ from sqlalchemy import FetchedValue, event
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
+
+db = db_manager.db
 
 
 class RoleType(str, Enum):
@@ -50,11 +52,9 @@ class User(UUIDMixin, TimeStampedMixin, UserMixin, db.Model):
     roles = db.relationship(
         'Role', secondary='user_roles', backref=db.backref('users', lazy=True)
     )
-    # roles = db.Column(db.String(50), nullable=True)
     is_totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
     two_factor_secret = db.Column(db.String(255))
     social_accounts = db.relationship('SocialAccount', backref='user', lazy=True)
-    # social_accounts = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f'<User {self.username}>'

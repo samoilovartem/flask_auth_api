@@ -14,4 +14,4 @@ RUN pip install -r /app/requirements.txt --no-cache-dir
 
 COPY . /app/
 
-CMD ["python", "manage.py", "runserver"]
+CMD flask db upgrade && python manage.py runserver

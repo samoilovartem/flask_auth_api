@@ -38,6 +38,9 @@ services:
     networks:
       - backend
     restart: always
+    depends_on:
+     - auth_db
+     - auth_redis
 
   auth_swagger:
     image: swaggerapi/swagger-ui

@@ -1,10 +1,9 @@
 from api.common import api
 from core.containers import Container
+from core.security_setup import setup_user_datastore
 from core.settings import settings
-from db.sql import create_schema_if_not_exists, db, migration
+from db.sql import db_manager
 from flask_jwt_extended import JWTManager
-from flask_security import Security, SQLAlchemyUserDatastore
-from models.models import Role, User
 
 
 def create_app():
@@ -15,6 +14,7 @@ def create_app():
     setup_database(app)
     register_blueprints(app)
     setup_security(app, settings)
+    app.app_context().push()
     return app
 
 
@@ -32,18 +32,17 @@ def setup_app(app, app_settings):
 
 
 def setup_database(app):
-    create_schema_if_not_exists(
+    db_manager.create_schema_if_not_exists(
         app.config['SQLALCHEMY_DATABASE_URI'], settings.postgres_schema
     )
-    db.init_app(app)
-    migration.init_app(app, db)
+    db_manager.db.init_app(app)
+    db_manager.migration.init_app(app, db_manager.db)
 
 
 def setup_security(app, app_settings):
     app.config['SECURITY_PASSWORD_SALT'] = app_settings.security_password_salt
     app.config['SECURITY_PASSWORD_HASH'] = app_settings.security_password_hash
-    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    Security(app, user_datastore)
+    setup_user_datastore(app)
 
 
 def register_blueprints(app):
