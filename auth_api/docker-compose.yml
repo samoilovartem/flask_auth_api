@@ -8,6 +8,9 @@ services:
   auth_db:
     container_name: auth_db
     image: postgres:15.2
+    healthcheck:
+      test: /usr/bin/pg_isready --username=$POSTGRES_USER --dbname=$POSTGRES_DB
+      timeout: 10s
     volumes:
       - postgres_data:/var/lib/postgresql/data
     <<: *services-env-file
