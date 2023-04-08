@@ -25,6 +25,12 @@ class RoleType(str, Enum):
     superuser = 'superuser'
 
 
+ROLE_DESCRIPTIONS = {
+    RoleType.user: 'User role with limited access',
+    RoleType.superuser: 'Superuser role with full access',
+}
+
+
 class TimeStampedMixin:
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
@@ -49,8 +55,11 @@ class User(UUIDMixin, TimeStampedMixin, UserMixin, db.Model):
     email = db.Column(db.String(50), unique=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
+    active = db.Column(db.Boolean, default=True, nullable=False)
     roles = db.relationship(
-        'Role', secondary='user_roles', backref=db.backref('users', lazy=True)
+        'Role',
+        secondary=f'{settings.postgres_schema}.user_roles',
+        backref=db.backref('users', lazy=True),
     )
     is_totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
     two_factor_secret = db.Column(db.String(255))

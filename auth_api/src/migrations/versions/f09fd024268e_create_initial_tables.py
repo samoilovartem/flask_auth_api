@@ -1,17 +1,17 @@
 """Create initial tables
 
-Revision ID: b5386b663e7e
+Revision ID: f09fd024268e
 Revises:
-Create Date: 2023-04-06 15:06:10.763159
+Create Date: 2023-04-08 06:20:26.614283
 
 """
 import sqlalchemy as sa
 
 from alembic import op
-from sqlalchemy.schema import FetchedValue
+from sqlalchemy import FetchedValue
 
 # revision identifiers, used by Alembic.
-revision = 'b5386b663e7e'
+revision = 'f09fd024268e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,6 +37,7 @@ def upgrade():
         sa.Column('email', sa.String(length=50), nullable=True),
         sa.Column('fs_uniquifier', sa.String(length=255), nullable=False),
         sa.Column('password', sa.String(length=255), nullable=False),
+        sa.Column('active', sa.Boolean(), nullable=False),
         sa.Column('is_totp_enabled', sa.Boolean(), nullable=False),
         sa.Column('two_factor_secret', sa.String(length=255), nullable=True),
         sa.Column('id', sa.UUID(), nullable=False),
