@@ -1,6 +1,6 @@
 import uuid
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 
 from core.settings import settings
@@ -165,6 +165,7 @@ class Token(UUIDMixin, db.Model):
     token_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     expires_at = db.Column(
+        # db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
         db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
     )
 
