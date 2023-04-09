@@ -3,7 +3,7 @@ from typing import Union
 from core.settings import settings
 from core.utils import ServiceException
 from db.redis import redis
-from db.sql import db
+from db.sql import db_manager
 from flask import Request, Response
 from flask_jwt_extended import create_access_token, create_refresh_token
 from models.models import (
@@ -54,8 +54,8 @@ class UserService(BaseService):
         password_hash = generate_password_hash(password)
 
         user = User(username=username, password=password_hash, email=email)
-        db.session.add(user)
-        db.session.commit()
+        db_manager.db.session.add(user)
+        db_manager.db.session.commit()
         return user
 
     def register_user(self, username: str, password: str, email: str, user_info: dict):
@@ -111,8 +111,8 @@ class UserService(BaseService):
             )
 
         access_token, refresh_token = generate_tokens(user)
-        db.session.delete(current_refresh_token)
-        db.session.commit()
+        db_manager.db.session.delete(current_refresh_token)
+        db_manager.db.session.commit()
 
         self.commit_authentication(
             user=user,
@@ -142,8 +142,8 @@ class UserService(BaseService):
                 message=self.INVALID_REFRESH_TOKEN.message,
             )
         # Delete the access token
-        db.session.delete(current_refresh_token)
-        db.session.commit()
+        db_manager.db.session.delete(current_refresh_token)
+        db_manager.db.session.commit()
 
         # Delete the refresh token
         redis.delete(access_token)
@@ -176,7 +176,7 @@ class UserService(BaseService):
     ):
         """Finalize successful authentication saving the details."""
         token = Token(token_owner_id=user.id, token_value=refresh_token)
-        db.session.add(token)
+        db_manager.db.session.add(token)
 
         if event_type == 'login':
             auth_event = AuthHistory(
@@ -184,9 +184,9 @@ class UserService(BaseService):
                 auth_event_type=event_type,
                 auth_event_fingerprint=str(user_info),
             )
-            db.session.add(auth_event)
+            db_manager.db.session.add(auth_event)
 
-        db.session.commit()
+        db_manager.db.session.commit()
         redis.set(name=access_token, value='', ex=settings.jwt_access)
 
     def validate_signup(self, request: Request) -> Union[SignupRequest, Response]:

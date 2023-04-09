@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 
 from core.settings import settings
-from db.sql import db
+from db.sql import db_manager
 from flask_security import RoleMixin, UserMixin, utils
 from models.create_partitions import (
     create_partition_auth_history,
@@ -16,11 +16,19 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 
+db = db_manager.db
+
 
 class RoleType(str, Enum):
     __table_args__ = {'schema': settings.postgres_schema}
     user = 'user'
     superuser = 'superuser'
+
+
+ROLE_DESCRIPTIONS = {
+    RoleType.user: 'User role with limited access',
+    RoleType.superuser: 'Superuser role with full access',
+}
 
 
 class TimeStampedMixin:
@@ -47,14 +55,15 @@ class User(UUIDMixin, TimeStampedMixin, UserMixin, db.Model):
     email = db.Column(db.String(50), unique=True)
     fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     _password = db.Column('password', db.String(255), nullable=False)
+    active = db.Column(db.Boolean, default=True, nullable=False)
     roles = db.relationship(
-        'Role', secondary='user_roles', backref=db.backref('users', lazy=True)
+        'Role',
+        secondary=f'{settings.postgres_schema}.user_roles',
+        backref=db.backref('users', lazy=True),
     )
-    # roles = db.Column(db.String(50), nullable=True)
     is_totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
     two_factor_secret = db.Column(db.String(255))
     social_accounts = db.relationship('SocialAccount', backref='user', lazy=True)
-    # social_accounts = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
