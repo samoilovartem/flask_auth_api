@@ -4,8 +4,7 @@ from http import HTTPStatus
 
 from db.redis import redis
 from flask import jsonify, make_response, request
-from flask_jwt_extended import get_jwt, get_jwt_identity, verify_jwt_in_request
-from models.models import User
+from flask_jwt_extended import get_jwt, verify_jwt_in_request
 
 
 @dataclass
@@ -70,18 +69,16 @@ def jwt_roles_required(*role_names):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             verify_jwt_in_request()
-            user_id = get_jwt_identity()
+            jwt_claims = get_jwt()
 
-            user = User.query.get(user_id)
-            if user is None:
-                return jsonify({"error": "User not found"}), HTTPStatus.NOT_FOUND
+            user_roles = jwt_claims.get('user_role', [])
 
-            if user.has_role('superuser'):
+            if 'superuser' in user_roles:
                 return fn(*args, **kwargs)
 
-            if not any(user.has_role(role_name) for role_name in role_names):
+            if not any(role_name in user_roles for role_name in role_names):
                 return (
-                    jsonify({"error": "Insufficient permissions"}),
+                    jsonify({'error': 'Insufficient permissions'}),
                     HTTPStatus.FORBIDDEN,
                 )
 

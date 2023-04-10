@@ -21,8 +21,11 @@ from services.base import BaseService
 
 def generate_tokens(user: User):
     """Create new access and refresh tokens for the user"""
+    user_roles = [role.name for role in user.roles]
+
     user_data = {
         'user_id': user.id,
+        'user_role': user_roles,
     }
     access_token = create_access_token(identity=user.id, additional_claims=user_data)
     refresh_token = create_refresh_token(identity=user.id, additional_claims=user_data)
@@ -52,7 +55,9 @@ class UserService(BaseService):
                 message = self.EMAIL_EXISTS.message
             raise ServiceException(error_code=error_code, message=message)
 
-        user = user_datastore.create_user(username=username, password=password, email=email)
+        user = user_datastore.create_user(
+            username=username, password=password, email=email
+        )
         db_manager.db.session.add(user)
         db_manager.db.session.commit()
         return user
@@ -171,7 +176,9 @@ class UserService(BaseService):
     ):
         """Finalize successful authentication saving the details."""
         # TODO: Delete expires_at placeholder
-        token = Token(token_owner_id=user.id, token_value=refresh_token, expires_at=datetime.now())
+        token = Token(
+            token_owner_id=user.id, token_value=refresh_token, expires_at=datetime.now()
+        )
         db_manager.db.session.add(token)
 
         if event_type == 'login':
