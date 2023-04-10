@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(find_dotenv())
 
 USER_ROLES = [
-    ('admin', 'Administrator with full access'),
+    ('superuser', 'Administrator with full access'),
     ('moderator', 'Moderator with limited access'),
     ('user', 'Regular user with basic access'),
 ]
