@@ -47,3 +47,8 @@ def setup_security(app, app_settings):
 
 def register_blueprints(app):
     app.register_blueprint(api, url_prefix='/api')
+
+
+if __name__ == "__main__":
+    application = create_app()
+    application.run(debug=True)

@@ -1,7 +1,6 @@
 import uuid
 
 from datetime import datetime
-from enum import Enum
 
 from core.settings import settings
 from db.sql import db_manager
@@ -17,18 +16,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 
 db = db_manager.db
-
-
-class RoleType(str, Enum):
-    __table_args__ = {'schema': settings.postgres_schema}
-    user = 'user'
-    superuser = 'superuser'
-
-
-ROLE_DESCRIPTIONS = {
-    RoleType.user: 'User role with limited access',
-    RoleType.superuser: 'Superuser role with full access',
-}
 
 
 class TimeStampedMixin:
@@ -131,7 +118,7 @@ class AuthHistory(UUIDMixin, TimeStampedMixin, db.Model):
 class Role(UUIDMixin, TimeStampedMixin, RoleMixin, db.Model):
     __tablename__ = 'roles'
     __table_args__ = {'schema': settings.postgres_schema}
-    name = db.Column(db.Enum(RoleType), unique=True)
+    name = db.Column(db.String(50), unique=True)
     description = db.Column(db.String(255))
 
     def __repr__(self):
@@ -165,7 +152,10 @@ class Token(UUIDMixin, db.Model):
     token_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     expires_at = db.Column(
-        db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
+        # db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
+        db.DateTime(timezone=True),
+        nullable=False,
+        server_default=FetchedValue(),
     )
 
     def __repr__(self):

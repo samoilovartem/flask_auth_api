@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import Union
 
+from core.security_setup import user_datastore
 from core.settings import settings
 from core.utils import ServiceException
 from db.redis import redis
@@ -15,7 +17,6 @@ from models.models import (
     User,
 )
 from services.base import BaseService
-from werkzeug.security import check_password_hash, generate_password_hash
 
 
 def generate_tokens(user: User):
@@ -51,9 +52,7 @@ class UserService(BaseService):
                 message = self.EMAIL_EXISTS.message
             raise ServiceException(error_code=error_code, message=message)
 
-        password_hash = generate_password_hash(password)
-
-        user = User(username=username, password=password_hash, email=email)
+        user = user_datastore.create_user(username=username, password=password, email=email)
         db_manager.db.session.add(user)
         db_manager.db.session.commit()
         return user
@@ -77,7 +76,7 @@ class UserService(BaseService):
                 error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
             )
 
-        if not check_password_hash(user.password, password):
+        if not user.verify_password(password):
             raise ServiceException(
                 error_code=self.WRONG_PASSWORD.code, message=self.WRONG_PASSWORD.message
             )
@@ -93,14 +92,13 @@ class UserService(BaseService):
 
         return access_token, refresh_token
 
-    def refresh(self, user_id: str, refresh_token: str) -> tuple[str, str]:
-        user: User = User.query.get(user_id)
-
+    def check_user(self, user: User) -> None:
         if not user:
             raise ServiceException(
                 error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
             )
 
+    def check_token(self, refresh_token: str) -> str:
         current_refresh_token = Token.query.filter(
             Token.token_value == refresh_token
         ).first()
@@ -109,6 +107,13 @@ class UserService(BaseService):
                 error_code=self.INVALID_REFRESH_TOKEN.code,
                 message=self.INVALID_REFRESH_TOKEN.message,
             )
+        return current_refresh_token
+
+    def refresh(self, user_id: str, refresh_token: str) -> tuple[str, str]:
+        user: User = User.query.get(user_id)
+
+        self.check_user(user)
+        current_refresh_token = self.check_token(refresh_token)
 
         access_token, refresh_token = generate_tokens(user)
         db_manager.db.session.delete(current_refresh_token)
@@ -128,19 +133,9 @@ class UserService(BaseService):
 
         authenticate(access_token)
 
-        if not user:
-            raise ServiceException(
-                error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
-            )
+        self.check_user(user)
+        current_refresh_token = self.check_token(refresh_token)
 
-        current_refresh_token = Token.query.filter(
-            Token.token_value == refresh_token
-        ).first()
-        if not current_refresh_token:
-            raise ServiceException(
-                error_code=self.INVALID_REFRESH_TOKEN.code,
-                message=self.INVALID_REFRESH_TOKEN.message,
-            )
         # Delete the access token
         db_manager.db.session.delete(current_refresh_token)
         db_manager.db.session.commit()
@@ -175,12 +170,15 @@ class UserService(BaseService):
         user_info: dict = None,
     ):
         """Finalize successful authentication saving the details."""
-        token = Token(token_owner_id=user.id, token_value=refresh_token)
+        # TODO: Delete expires_at placeholder
+        token = Token(token_owner_id=user.id, token_value=refresh_token, expires_at=datetime.now())
         db_manager.db.session.add(token)
 
         if event_type == 'login':
             auth_event = AuthHistory(
                 user_id=user.id,
+                ip_address='127.0.0.1',  # TODO: получить айпи пользователя
+                user_agent='Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>',
                 auth_event_type=event_type,
                 auth_event_fingerprint=str(user_info),
             )

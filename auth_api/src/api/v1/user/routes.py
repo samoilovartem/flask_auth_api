@@ -32,7 +32,7 @@ def signup(user_service: UserService = Provide[Container.user_service]):
     )
 
 
-@user.route('/auth', methods=['POST'])
+@user.route('/login', methods=['POST'])
 @inject
 def login(user_service: UserService = Provide[Container.user_service]):
     """Log user in using username and password."""
@@ -51,7 +51,7 @@ def login(user_service: UserService = Provide[Container.user_service]):
     )
 
 
-@user.route('/auth', methods=['PUT'])
+@user.route('/refresh', methods=['PUT'])
 @jwt_required(refresh=True)
 @inject
 def refresh(user_service: UserService = Provide[Container.user_service]):
@@ -76,14 +76,13 @@ def refresh(user_service: UserService = Provide[Container.user_service]):
     )
 
 
-@user.route('/auth/logout', methods=['POST'])
+@user.route('/logout', methods=['DELETE'])
 @jwt_required()
 @authenticate()
 @inject
 def logout(user_id: str, user_service: UserService = Provide[Container.user_service]):
     access_token = request.headers['Authorization'].split().pop(-1)
-    request_json = request.json
-    refresh_token = request_json['refresh_token']
+    refresh_token = request.json['refresh_token']
 
     access_token, refresh_token = user_service.logout(
         user_id=user_id, access_token=access_token, refresh_token=refresh_token
@@ -94,7 +93,7 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
     )
 
 
-@user.route('/auth', methods=['PATCH'])
+@user.route('/modify', methods=['PATCH'])
 @jwt_required()
 @authenticate()
 @inject
@@ -111,7 +110,7 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
     return make_response({}, HTTPStatus.ACCEPTED)
 
 
-@user.route('/auth', methods=["GET"])
+@user.route('/auth_history', methods=["GET"])
 @jwt_required()
 @authenticate()
 @inject
