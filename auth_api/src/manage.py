@@ -50,7 +50,7 @@ def create_superuser(username: str, password: str) -> None:
     try:
         with db_manager.transaction():
             user = user_datastore.create_user(username=username, password=password)
-            user_datastore.add_role_to_user(user, 'admin')
+            user_datastore.add_role_to_user(user, 'superuser')
             click.echo(
                 message=f'Superuser {username} created successfully!', color=True
             )
