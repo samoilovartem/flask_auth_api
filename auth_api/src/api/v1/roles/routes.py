@@ -12,6 +12,9 @@ role = Blueprint('role', __name__, url_prefix='/role')
 @role.route('/', methods=['POST'])
 @jwt_roles_required()
 def create_role():
+    """
+    Create a new role with the given name and description.
+    """
     data = request.get_json()
     name = data.get('name')
     description = data.get('description')
@@ -33,6 +36,9 @@ def create_role():
 @role.route('/', methods=['GET'])
 @jwt_roles_required()
 def view_roles():
+    """
+    Retrieve all existing roles.
+    """
     roles = Role.query.all()
     result = []
 
@@ -52,6 +58,9 @@ def view_roles():
 @role.route('/<role_id>', methods=['PUT'])
 @jwt_roles_required()
 def update_role(role_id):
+    """
+    Update the name and/or description of the role with the given role_id.
+    """
     role = Role.query.get(role_id)
 
     if role is None:
@@ -75,6 +84,9 @@ def update_role(role_id):
 @role.route('/<role_id>', methods=['DELETE'])
 @jwt_roles_required()
 def delete_role(role_id):
+    """
+    Delete the role with the given role_id.
+    """
     role = Role.query.get(role_id)
 
     if role is None:
@@ -89,6 +101,9 @@ def delete_role(role_id):
 @role.route('/assign/<user_id>', methods=['POST'])
 @jwt_roles_required()
 def assign_role_to_user(user_id):
+    """
+    Assign a role to a user by specifying the user_id and role_id in the request payload.
+    """
     data = request.json
 
     if not data or 'role_id' not in data:
@@ -118,6 +133,9 @@ def assign_role_to_user(user_id):
 @role.route('/revoke/<user_id>', methods=['DELETE'])
 @jwt_roles_required()
 def revoke_role_from_user(user_id):
+    """
+    Revoke a role from a user by specifying the user_id and role_id in the request payload.
+    """
     data = request.json
 
     if not data or 'role_id' not in data:
