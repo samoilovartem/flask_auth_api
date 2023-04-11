@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from db.redis import redis
 from flask import jsonify, make_response, request
-from flask_jwt_extended import get_jwt
+from flask_jwt_extended import get_jwt, verify_jwt_in_request
 
 
 @dataclass
@@ -48,3 +48,42 @@ def authenticate():
 
 def get_auth_headers(token: str):
     return {'Authorization': 'Bearer ' + token}
+
+
+def jwt_roles_required(*role_names):
+    """
+    Decorator for requiring one or more roles to access a route. Users with the 'superuser' role
+    will always have access to the route, regardless of the specified roles.
+
+    Usage:
+        @jwt_roles_required('role1', 'role2')
+        def protected_route():
+            ...
+
+    :param role_names: One or more role names (strings) required for accessing the route.
+    :return: The decorated function if the user has the required roles or the 'superuser' role;
+             otherwise, a 403 Forbidden response with an "Insufficient permissions" error message.
+    """
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            verify_jwt_in_request()
+            jwt_claims = get_jwt()
+
+            user_roles = jwt_claims.get('user_role', [])
+
+            if 'superuser' in user_roles:
+                return fn(*args, **kwargs)
+
+            if not any(role_name in user_roles for role_name in role_names):
+                return (
+                    jsonify({'error': 'Insufficient permissions'}),
+                    HTTPStatus.FORBIDDEN,
+                )
+
+            return fn(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
