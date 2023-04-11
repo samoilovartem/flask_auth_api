@@ -68,4 +68,4 @@ def setup_documentation(app):
 
 if __name__ == "__main__":
     application = create_app()
-    application.run(debug=True)
+    application.run(port=8002, debug=True)
