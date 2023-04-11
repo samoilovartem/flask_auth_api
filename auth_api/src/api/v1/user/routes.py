@@ -111,7 +111,7 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
     except ServiceException as err:
         return make_response(jsonify(err), 400)
 
-    return make_response({}, HTTPStatus.ACCEPTED)
+    return make_response({'msg': 'Password has been updated'}, HTTPStatus.ACCEPTED)
 
 
 @user.route('/auth_history', methods=["GET"])
