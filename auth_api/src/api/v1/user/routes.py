@@ -20,12 +20,15 @@ def signup(user_service: UserService = Provide[Container.user_service]):
 
     user_info = {'user-agent': request.headers.get('User-Agent')}
 
-    access_token, refresh_token = user_service.register_user(
-        signup_request.username,
-        signup_request.password,
-        signup_request.email,
-        user_info,
-    )
+    try:
+        access_token, refresh_token = user_service.register_user(
+            signup_request.username,
+            signup_request.password,
+            signup_request.email,
+            user_info,
+        )
+    except ServiceException as e:
+        return make_response(jsonify(e), 400)
 
     return make_response(
         jsonify(access_token=access_token, refresh_token=refresh_token), HTTPStatus.OK
@@ -42,9 +45,12 @@ def login(user_service: UserService = Provide[Container.user_service]):
 
     user_info = {'user-agent': request.headers.get('User-Agent')}
 
-    access_token, refresh_token = user_service.login(
-        login_request.username, login_request.password, user_info
-    )
+    try:
+        access_token, refresh_token = user_service.login(
+            login_request.username, login_request.password, user_info
+        )
+    except ServiceException as e:
+        return make_response(jsonify(e), 400)
 
     return make_response(
         jsonify(access_token=access_token, refresh_token=refresh_token), HTTPStatus.OK
@@ -84,13 +90,11 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
     access_token = request.headers['Authorization'].split().pop(-1)
     refresh_token = request.json['refresh_token']
 
-    access_token, refresh_token = user_service.logout(
+    user_service.logout(
         user_id=user_id, access_token=access_token, refresh_token=refresh_token
     )
 
-    return make_response(
-        jsonify(access_token=access_token, refresh_token=refresh_token)
-    )
+    return make_response({}, HTTPStatus.ACCEPTED)
 
 
 @user.route('/modify', methods=['PATCH'])
