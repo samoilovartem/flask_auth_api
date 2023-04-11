@@ -159,12 +159,36 @@ class UserService(BaseService):
         for event in history:
             result.append(
                 {
-                    'uuid': event.auth_event_id,
+                    'uuid': event.id,
                     'time': event.auth_event_time,
                     'fingerprint': event.auth_event_fingerprint,
                 }
             )
         return result
+
+    def modify(self, user_id, new_username: str, new_password: str):
+        user: User = User.query.get(user_id)
+
+        if not user:
+            raise ServiceException(error_code=self.USER_NOT_FOUND.code,
+                                   message=self.USER_NOT_FOUND.message)
+
+        if not new_username == user.username:
+            existing_user = User.query.filter(
+                (User.username == new_username)
+            ).first()
+
+            if existing_user:
+                raise ServiceException(error_code=self.LOGIN_EXISTS.code,
+                                       message=self.LOGIN_EXISTS.message)
+
+            user.username = new_username
+
+        if not new_password == user.password:
+            user.password = new_password
+
+        if db_manager.db.session.is_modified(user):
+            db_manager.db.session.commit()
 
     @staticmethod
     def commit_authentication(
