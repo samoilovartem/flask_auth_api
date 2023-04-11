@@ -31,9 +31,8 @@ class BaseService:
             # TO DO: logging
             return make_response(
                 {
-                    'message': "Bad request!",
-                    'status': 400,
-                    'Error': str(err),
+                    'error_code': "BAD_REQUEST",
+                    'message': str(err),
                 },
                 HTTPStatus.BAD_REQUEST,
             )
