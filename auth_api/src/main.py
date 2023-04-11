@@ -1,14 +1,12 @@
-import os
-
-from apispec import APISpec
-from apispec_webframeworks.flask import FlaskPlugin
-
 from api.common import api
+from core import documentation
 from core.containers import Container
 from core.security_setup import setup_user_datastore
 from core.settings import settings
 from db.sql import db_manager
 from flask_jwt_extended import JWTManager
+from apispec import APISpec
+from apispec_webframeworks.flask import FlaskPlugin
 
 
 def create_app():
@@ -56,10 +54,6 @@ def register_blueprints(app):
 
 
 def setup_documentation(app):
-    """ Формируем объект APISpec.
-
-    :param app: объект Flask приложения
-    """
     spec = APISpec(
         title="Gisty",
         version="1.0.0",
@@ -67,18 +61,8 @@ def setup_documentation(app):
         info=dict(description="A minimal gist API"),
         plugins=[FlaskPlugin()]
     )
-
-    # Load paths
-    with app.app_context():
-        for fn_name in app.view_functions:
-            if fn_name in ('static', 'security.static'):
-                continue
-            view_fn = app.view_functions[fn_name]
-            if view_fn.__doc__:
-                spec.path(view=view_fn)
-
-    from core.settings import BASE_DIR
-    with open(os.path.join(BASE_DIR, './test.yml'), 'w', encoding='utf-8') as f:
+    documentation.load_spec(app, spec)
+    with open(settings.documentation_path, 'w', encoding='utf-8') as f:
         f.write(spec.to_yaml())
 
 
