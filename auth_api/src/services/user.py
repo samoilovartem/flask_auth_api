@@ -182,7 +182,7 @@ class UserService(BaseService):
                 raise ServiceException(error_code=self.LOGIN_EXISTS.code,
                                        message=self.LOGIN_EXISTS.message)
 
-            user.user_login = new_username
+            user.username = new_username
 
         if not new_password == user.password:
             user.password = new_password
