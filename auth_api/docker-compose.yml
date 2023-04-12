@@ -59,6 +59,19 @@ services:
     profiles:
       - testing
 
+  nginx:
+    container_name: auth_nginx
+    image: nginx:1.21
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - auth_app
+    networks:
+      - backend
+    ports:
+      - "${NGINX_PORT}:${NGINX_CONTAINER_PORT}"
+
 volumes:
   postgres_data:
 
