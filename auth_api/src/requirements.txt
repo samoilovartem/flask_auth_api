@@ -496,6 +496,9 @@ orjson==3.8.9 ; python_version >= "3.11" and python_version < "4.0" \
     --hash=sha256:e20649359e28f34d01b2570e4650a076f439a959bae3a8bbe7f5923ad80f54e8 \
     --hash=sha256:e8efc7e9ec35336f7cc98b6692536b1262046ff1d2a545295a4d89b8a2495903 \
     --hash=sha256:f0e19801836cf1b30f333d475b05d79051b8ae8639a8e2422fb5f64e82676ae7
+packaging==23.0 ; python_version >= "3.11" and python_version < "4.0" \
+    --hash=sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2 \
+    --hash=sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97
 passlib==1.7.4 ; python_version >= "3.11" and python_version < "4.0" \
     --hash=sha256:aa6bca462b8d8bda89c70b382f0c298a20b5560af6cbfa2dce410c0a2fb669f1 \
     --hash=sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04
@@ -752,4 +755,3 @@ zope-interface==6.0 ; python_version >= "3.11" and python_version < "4.0" \
     --hash=sha256:f299c020c6679cb389814a3b81200fe55d428012c5e76da7e722491f5d205990 \
     --hash=sha256:f72f23bab1848edb7472309e9898603141644faec9fd57a823ea6b4d1c4c8995 \
     --hash=sha256:fa90bac61c9dc3e1a563e5babb3fd2c0c1c80567e815442ddbe561eadc803b30
-apispec==6.3.0
