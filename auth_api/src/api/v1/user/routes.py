@@ -30,7 +30,7 @@ def signup(user_service: UserService = Provide[Container.user_service]):
               example: john@email.com
             password:
               type: string
-              example: '12345'
+              example: '1   2345'
       responses:
         '200':
           description: Access/Refresh tokens Pair

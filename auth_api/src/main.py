@@ -26,8 +26,6 @@ def create_app():
 
 
 def setup_app(app, app_settings):
-    # app.json_encoder = ORJSONEncoder
-    # app.json_decoder = ORJSONDecoder
     app.config['DEBUG'] = app_settings.flask_debug
     app.config['SECRET_KEY'] = app_settings.flask_secret_key
     app.config['SQLALCHEMY_DATABASE_URI'] = app_settings.sqlalchemy_database_uri
@@ -39,9 +37,6 @@ def setup_app(app, app_settings):
 
 
 def setup_database(app):
-    db_manager.create_schema_if_not_exists(
-        app.config['SQLALCHEMY_DATABASE_URI'], settings.postgres_schema
-    )
     db_manager.db.init_app(app)
     db_manager.migration.init_app(app, db_manager.db)
 

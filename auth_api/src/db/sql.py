@@ -14,7 +14,7 @@ class DatabaseManager:
     @staticmethod
     def create_schema_if_not_exists(database_uri, schema_name):
         engine = create_engine(database_uri)
-        create_schema = DDL(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+        create_schema = DDL(f'CREATE SCHEMA IF NOT EXISTS {schema_name}')
         with engine.begin() as connection:
             connection.execute(create_schema)
 
