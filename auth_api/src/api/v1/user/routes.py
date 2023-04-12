@@ -130,13 +130,14 @@ def login(user_service: UserService = Provide[Container.user_service]):
 def refresh(user_service: UserService = Provide[Container.user_service]):
     """
     ---
-   post:
+   put:
       summary: Get new access token by refresh token
       parameters:
       - in: headers
         name: Authorization
         type: string
         example: Bearer jwt_refresh_token
+        required: true
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -183,13 +184,14 @@ def refresh(user_service: UserService = Provide[Container.user_service]):
 def logout(user_id: str, user_service: UserService = Provide[Container.user_service]):
     """
     ---
-   post:
+   delete:
       summary: Logout
       parameters:
       - in: headers
         name: Authorization
         type: string
         example: Bearer jwt_access_token
+        required: true
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -225,13 +227,14 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
 def modify(user_id: str, user_service: UserService = Provide[Container.user_service]):
     """
     ---
-   post:
+   patch:
       summary: Modify user
       parameters:
       - in: headers
         name: Authorization
         type: string
         example: Bearer jwt_access_token
+        required: true
       responses:
         '200':
           description: success
@@ -259,13 +262,14 @@ def auth_history(
 ):
     """
     ---
-   post:
+   get:
       summary: Get User history
       parameters:
       - in: headers
         name: Authorization
         type: string
         example: Bearer jwt_access_token
+        required: true
       responses:
         '200':
           description: success
