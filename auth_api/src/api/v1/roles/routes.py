@@ -14,6 +14,59 @@ role = Blueprint('role', __name__, url_prefix='/role')
 def create_role():
     """
     Create a new role with the given name and description.
+    ---
+   post:
+      summary: Create a new role with the given name and description.
+      parameters:
+      - in: headers
+        name: Authorization
+        type: string
+        example: Bearer jwt_access_token
+      - in: body
+        name: requestBody
+        type: object
+        properties:
+          name:
+            type: string
+          description:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Role created successfully
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Missing name or description
+        '409':
+          description: conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Role already exists
+        '401':
+          description: unathorized
+        '403':
+          description: forbidden
+      tags:
+        - roles
     """
     data = request.get_json()
     name = data.get('name')
@@ -38,6 +91,41 @@ def create_role():
 def view_roles():
     """
     Retrieve all existing roles.
+    ---
+   get:
+      summary: Retrieve all existing roles.
+      parameters:
+      - in: headers
+        name: Authorization
+        type: string
+        example: Bearer jwt_access_token
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      created_at:
+                        type: string
+                      updated_at:
+                        type: string
+
+        '401':
+          description: unathorized
+        '403':
+          description: forbidden
+      tags:
+        - roles
     """
     roles = Role.query.all()
     result = []
@@ -60,6 +148,52 @@ def view_roles():
 def update_role(role_id):
     """
     Update the name and/or description of the role with the given role_id.
+    ---
+    put:
+      summary: Update the name and/or description of the role with the given role_id.
+      parameters:
+      - in: headers
+        name: Authorization
+        type: string
+        example: Bearer jwt_access_token
+      - in: query
+        name: role_id
+        type: string
+      - in: body
+        name: requestBody
+        type: object
+        properties:
+          name:
+            type: string
+          description:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role updated successfully
+        '401':
+          description: unathorized
+        '403':
+          description: forbidden
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role not found
+      tags:
+        - roles
     """
     role = Role.query.get(role_id)
 
@@ -86,6 +220,45 @@ def update_role(role_id):
 def delete_role(role_id):
     """
     Delete the role with the given role_id.
+    ---
+    delete:
+      summary: Delete the role with the given role_id.
+      parameters:
+      - in: headers
+        name: Authorization
+        type: string
+        example: Bearer jwt_access_token
+      - in: query
+        name: role_id
+        type: string
+        required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role deleted successfully
+        '401':
+          description: unathorized
+        '403':
+          description: forbidden
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role not found
+      tags:
+        - roles
     """
     role = Role.query.get(role_id)
 
@@ -103,6 +276,53 @@ def delete_role(role_id):
 def assign_role_to_user(user_id):
     """
     Assign a role to a user by specifying the user_id and role_id in the request payload.
+    ---
+    post:
+      summary: Assign a role to a user by specifying the user_id and role_id in the request payload.
+      parameters:
+      - in: headers
+        name: Authorization
+        type: string
+        example: Bearer jwt_access_token
+        required: true
+      - in: query
+        name: user_id
+        type: string
+        required: true
+      - in: body
+        name: requestBody
+        type: object
+        properties:
+          role_id:
+            type: string
+            required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role assigned to user successfully
+        '401':
+          description: unathorized
+        '403':
+          description: forbidden
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role not found
+      tags:
+        - roles
     """
     data = request.json
 
@@ -135,6 +355,63 @@ def assign_role_to_user(user_id):
 def revoke_role_from_user(user_id):
     """
     Revoke a role from a user by specifying the user_id and role_id in the request payload.
+        ---
+    delete:
+      summary: Assign a role to a user by specifying the user_id and role_id in the request payload.
+      parameters:
+      - in: headers
+        name: Authorization
+        type: string
+        example: Bearer jwt_access_token
+        required: true
+      - in: query
+        name: user_id
+        type: string
+        required: true
+      - in: body
+        name: requestBody
+        type: object
+        properties:
+          role_id:
+            type: string
+            required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role revoked from user successfully
+        '401':
+          description: unathorized
+        '403':
+          description: forbidden
+        '404':
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        example: Role not found
+        '409':
+          description: conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User does not have this role"
+      tags:
+        - roles
     """
     data = request.json
 

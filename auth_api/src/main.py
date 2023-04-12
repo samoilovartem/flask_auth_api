@@ -7,6 +7,7 @@ from db.sql import db_manager
 from flask_jwt_extended import JWTManager
 from apispec import APISpec
 from apispec_webframeworks.flask import FlaskPlugin
+from flask_cors import CORS
 
 
 def create_app():
@@ -18,6 +19,8 @@ def create_app():
     register_blueprints(app)
     setup_security(app, settings)
     setup_documentation(app)
+    # Add CORS politics
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     app.app_context().push()
     return app
 
@@ -55,11 +58,15 @@ def register_blueprints(app):
 
 def setup_documentation(app):
     spec = APISpec(
-        title="Gisty",
+        title="Auth API",
         version="1.0.0",
         openapi_version="3.0.2",
-        info=dict(description="A minimal gist API"),
-        plugins=[FlaskPlugin()]
+        info=dict(description="Sprint 1"),
+        plugins=[FlaskPlugin()],
+        servers=[{
+          "url": "http://localhost:5000",
+          "description": "Development server"}
+        ]
     )
     documentation.load_spec(app, spec)
     with open(settings.documentation_path, 'w', encoding='utf-8') as f:

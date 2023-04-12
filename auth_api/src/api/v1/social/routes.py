@@ -11,12 +11,6 @@ social = Blueprint('social', __name__, url_prefix='/social')
 def methods_list():
     """
     Возвращает список соц сетей для входа
-    ---
-    get:
-      description: Возвращает список соц сетей для входа
-      responses:
-        200:
-          description: Return a HTML Page
     """
     provider: SocialProvider = social_auth_service.get_provider_by_name('google')
     handler_path: str = f'{request.base_url}handler/'
