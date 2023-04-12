@@ -186,6 +186,15 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
       summary: Logout
       security:
         - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    refresh_token:
+                      type: string
+                      example: jwt_refresh_token
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -225,6 +234,33 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
       summary: Modify user
       security:
         - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                oneOf:
+                    - type: object
+                      properties:
+                        username:
+                          type: string
+                          example: new_name_user
+                          required: true
+                        password:
+                          type: string
+                          example: 123458
+                          required: true
+                    - type: object
+                      properties:
+                        username:
+                          type: string
+                          example: new_name_user
+                          required: true
+                    - type: object
+                      properties:
+                        password:
+                          type: string
+                          example: new_name_user
+                          required: true
       responses:
         '200':
           description: success
