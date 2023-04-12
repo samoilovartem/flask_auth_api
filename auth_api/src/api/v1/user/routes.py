@@ -17,20 +17,21 @@ def signup(user_service: UserService = Provide[Container.user_service]):
     ---
    post:
       summary: Creates a new user
-      parameters:
-      - in: body
-        name: requestBody
-        type: object
-        properties:
-            username:
-              type: string
-              example: theUser
-            email:
-              type: string
-              example: john@email.com
-            password:
-              type: string
-              example: '1   2345'
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    username:
+                      type: string
+                      example: theUser
+                    email:
+                      type: string
+                      example: john@email.com
+                    password:
+                      type: string
+                      example: '12345'
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -77,17 +78,18 @@ def login(user_service: UserService = Provide[Container.user_service]):
     ---
    post:
       summary: Log user in using username and password
-      parameters:
-      - in: body
-        name: requestBody
-        type: object
-        properties:
-            username:
-              type: string
-              example: theUser
-            password:
-              type: string
-              example: '12345'
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    username:
+                      type: string
+                      example: theUser
+                    password:
+                      type: string
+                      example: '12345'
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -132,12 +134,8 @@ def refresh(user_service: UserService = Provide[Container.user_service]):
     ---
    put:
       summary: Get new access token by refresh token
-      parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_refresh_token
-        required: true
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -186,12 +184,8 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
     ---
    delete:
       summary: Logout
-      parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-        required: true
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Access/Refresh tokens Pair
@@ -229,12 +223,8 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
     ---
    patch:
       summary: Modify user
-      parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-        required: true
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: success
@@ -264,12 +254,8 @@ def auth_history(
     ---
    get:
       summary: Get User history
-      parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-        required: true
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: success

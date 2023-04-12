@@ -17,19 +17,18 @@ def create_role():
     ---
    post:
       summary: Create a new role with the given name and description.
-      parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-      - in: body
-        name: requestBody
-        type: object
-        properties:
-          name:
-            type: string
-          description:
-            type: string
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
       responses:
         '200':
           description: success
@@ -94,11 +93,8 @@ def view_roles():
     ---
    get:
       summary: Retrieve all existing roles.
-      parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: success
@@ -151,22 +147,22 @@ def update_role(role_id):
     ---
     put:
       summary: Update the name and/or description of the role with the given role_id.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
       parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-      - in: query
+      - in: path
         name: role_id
         type: string
-      - in: body
-        name: requestBody
-        type: object
-        properties:
-          name:
-            type: string
-          description:
-            type: string
       responses:
         '200':
           description: success
@@ -223,12 +219,10 @@ def delete_role(role_id):
     ---
     delete:
       summary: Delete the role with the given role_id.
+      security:
+        - bearerAuth: []
       parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-      - in: query
+      - in: path
         name: role_id
         type: string
         required: true
@@ -279,23 +273,22 @@ def assign_role_to_user(user_id):
     ---
     post:
       summary: Assign a role to a user by specifying the user_id and role_id in the request payload.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                  role_id:
+                    type: string
+                    required: true
       parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-        required: true
-      - in: query
+      - in: path
         name: user_id
         type: string
         required: true
-      - in: body
-        name: requestBody
-        type: object
-        properties:
-          role_id:
-            type: string
-            required: true
       responses:
         '200':
           description: success
@@ -358,23 +351,22 @@ def revoke_role_from_user(user_id):
         ---
     delete:
       summary: Assign a role to a user by specifying the user_id and role_id in the request payload.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    role_id:
+                        type: string
+                        required: true
       parameters:
-      - in: headers
-        name: Authorization
-        type: string
-        example: Bearer jwt_access_token
-        required: true
-      - in: query
+      - in: path
         name: user_id
         type: string
         required: true
-      - in: body
-        name: requestBody
-        type: object
-        properties:
-          role_id:
-            type: string
-            required: true
       responses:
         '200':
           description: success
