@@ -64,7 +64,7 @@ def signup(user_service: UserService = Provide[Container.user_service]):
             user_info,
         )
     except ServiceException as e:
-        return make_response(jsonify(e), 400)
+        return make_response(jsonify(e), HTTPStatus.BAD_REQUEST)
 
     return make_response(
         jsonify(access_token=access_token, refresh_token=refresh_token), HTTPStatus.OK
@@ -119,7 +119,7 @@ def login(user_service: UserService = Provide[Container.user_service]):
             login_request.username, login_request.password, user_info
         )
     except ServiceException as e:
-        return make_response(jsonify(e), 400)
+        return make_response(jsonify(e), HTTPStatus.BAD_REQUEST)
 
     return make_response(
         jsonify(access_token=access_token, refresh_token=refresh_token), HTTPStatus.OK
@@ -274,7 +274,7 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
     try:
         user_service.modify(user_id, modify_request.username, modify_request.password)
     except ServiceException as err:
-        return make_response(jsonify(err), 400)
+        return make_response(jsonify(err), HTTPStatus.BAD_REQUEST)
 
     return make_response({'msg': 'Password has been updated'}, HTTPStatus.ACCEPTED)
 
@@ -284,7 +284,7 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
 @authenticate()
 @inject
 def auth_history(
-    user_id: str, user_service: UserService = Provide[Container.user_service]
+        user_id: str, user_service: UserService = Provide[Container.user_service]
 ):
     """
     ---
@@ -338,9 +338,9 @@ def auth_history(
         - authorization
     """
     try:
-        kwargs = {key:int(request.args[key]) for key in request.args}
+        kwargs = {key: int(request.args[key]) for key in request.args}
         print(kwargs)
         history = user_service.get_auth_history(user_id, **kwargs)
     except ServiceException as err:
-        return make_response(jsonify(err), 400)
+        return make_response(jsonify(err), HTTPStatus.BAD_REQUEST)
     return make_response(jsonify(history), HTTPStatus.OK)
