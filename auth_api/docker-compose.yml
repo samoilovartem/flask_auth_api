@@ -14,8 +14,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     <<: *services-env-file
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}"
     networks:
       - backend
     restart: always

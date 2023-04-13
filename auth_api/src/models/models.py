@@ -5,12 +5,9 @@ from datetime import datetime
 from core.settings import settings
 from db.sql import db_manager
 from flask_security import RoleMixin, UserMixin, utils
-from models.create_partitions import (
-    create_partition_auth_history,
-    create_partition_user,
-)
+from models.create_partitions import create_partition_auth_history
 from pydantic import BaseModel, EmailStr, constr
-from sqlalchemy import FetchedValue, PrimaryKeyConstraint, event
+from sqlalchemy import FetchedValue, PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
@@ -141,9 +138,6 @@ class UserRole(UUIDMixin, db.Model):
     role_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey('roles.id', ondelete='CASCADE')
     )
-
-
-event.listen(User.__table__, 'after_create', create_partition_user)
 
 
 class Token(UUIDMixin, db.Model):
