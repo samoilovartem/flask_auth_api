@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     admin_default_username: str = Field(env='ADMIN_DEFAULT_USERNAME')
     admin_default_password: str = Field(env='ADMIN_DEFAULT_PASSWORD')
 
-    documentation_path: str = os.path.join(BASE_DIR, 'design', 'test.yaml')
+    documentation_path: str = os.path.join(BASE_DIR, 'design', 'openapi.yaml')
 
     class Config:
         env_file = os.path.join(BASE_DIR, '..', '.env')

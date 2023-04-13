@@ -292,28 +292,55 @@ def auth_history(
       summary: Get User history
       security:
         - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          type: string
+          example: 1
+          description: Pagination page
+        - in: query
+          name: per_page
+          type: int
+          example: 3
+          description: events per page
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                type: array
-                items:
-                    type: object
-                    properties:
-                      uuid:
-                        type: string
-                      time:
-                        type: string
-                      fingerprint:
-                        type: string
+                type: object
+                properties:
+                    next_page:
+                        type: integer
+                    prev_page:
+                        type: integer
+                    pages:
+                        type: integer
+                    per_page:
+                        type: integer
+                    total:
+                        type: integer
+                    events:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                              uuid:
+                                type: string
+                              time:
+                                type: string
+                              fingerprint:
+                                type: string
+        '404':
+            description: Page not found
       tags:
         - authorization
     """
     try:
-        history = user_service.get_auth_history(user_id)
+        kwargs = {key:int(request.args[key]) for key in request.args}
+        print(kwargs)
+        history = user_service.get_auth_history(user_id, **kwargs)
     except ServiceException as err:
         return make_response(jsonify(err), 400)
-
     return make_response(jsonify(history), HTTPStatus.OK)
