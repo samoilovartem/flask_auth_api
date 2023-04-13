@@ -13,7 +13,43 @@ user = Blueprint('user', __name__, url_prefix='/user')
 @user.route('/signup', methods=['POST'])
 @inject
 def signup(user_service: UserService = Provide[Container.user_service]):
-    """Creates a new user"""
+    """Creates a new user
+    ---
+   post:
+      summary: Creates a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    username:
+                      type: string
+                      example: theUser
+                    email:
+                      type: string
+                      example: john@email.com
+                    password:
+                      type: string
+                      example: '12345'
+      responses:
+        '200':
+          description: Access/Refresh tokens Pair
+          content:
+            application/json:
+              schema:
+                type: object
+                in: body
+                properties:
+                  access_token:
+                    type: string
+                    example: 'jwt_token'
+                  refresh_token:
+                    type: string
+                    example: 'jwt_token'
+      tags:
+        - authorization
+    """
     signup_request = user_service.validate_signup(request)
     if isinstance(signup_request, Response):
         return signup_request
@@ -38,7 +74,40 @@ def signup(user_service: UserService = Provide[Container.user_service]):
 @user.route('/login', methods=['POST'])
 @inject
 def login(user_service: UserService = Provide[Container.user_service]):
-    """Log user in using username and password."""
+    """Log user in using username and password.
+    ---
+   post:
+      summary: Log user in using username and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    username:
+                      type: string
+                      example: theUser
+                    password:
+                      type: string
+                      example: '12345'
+      responses:
+        '200':
+          description: Access/Refresh tokens Pair
+          content:
+            application/json:
+              schema:
+                type: object
+                in: body
+                properties:
+                  access_token:
+                    type: string
+                    example: 'jwt_token'
+                  refresh_token:
+                    type: string
+                    example: 'jwt_token'
+      tags:
+        - authorization
+    """
     login_request = user_service.validate_login(request)
     if isinstance(login_request, Response):
         return login_request
@@ -61,6 +130,30 @@ def login(user_service: UserService = Provide[Container.user_service]):
 @jwt_required(refresh=True)
 @inject
 def refresh(user_service: UserService = Provide[Container.user_service]):
+    """
+    ---
+   put:
+      summary: Get new access token by refresh token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Access/Refresh tokens Pair
+          content:
+            application/json:
+              schema:
+                type: object
+                in: body
+                properties:
+                  access_token:
+                    type: string
+                    example: 'jwt_token'
+                  refresh_token:
+                    type: string
+                    example: 'jwt_token'
+      tags:
+        - authorization
+    """
     jwt = get_jwt()
     refresh_token = request.headers['Authorization'].split().pop(-1)
 
@@ -87,6 +180,39 @@ def refresh(user_service: UserService = Provide[Container.user_service]):
 @authenticate()
 @inject
 def logout(user_id: str, user_service: UserService = Provide[Container.user_service]):
+    """
+    ---
+   delete:
+      summary: Logout
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                type: object
+                properties:
+                    refresh_token:
+                      type: string
+                      example: jwt_refresh_token
+      responses:
+        '200':
+          description: Access/Refresh tokens Pair
+          content:
+            application/json:
+              schema:
+                type: object
+                in: body
+                properties:
+                  access_token:
+                    type: string
+                    example: 'jwt_token'
+                  refresh_token:
+                    type: string
+                    example: 'jwt_token'
+      tags:
+        - authorization
+    """
     access_token = request.headers['Authorization'].split().pop(-1)
     refresh_token = request.json['refresh_token']
 
@@ -102,6 +228,45 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
 @authenticate()
 @inject
 def modify(user_id: str, user_service: UserService = Provide[Container.user_service]):
+    """
+    ---
+   patch:
+      summary: Modify user
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+                oneOf:
+                    - type: object
+                      properties:
+                        username:
+                          type: string
+                          example: new_name_user
+                          required: true
+                        password:
+                          type: string
+                          example: 123458
+                          required: true
+                    - type: object
+                      properties:
+                        username:
+                          type: string
+                          example: new_name_user
+                          required: true
+                    - type: object
+                      properties:
+                        password:
+                          type: string
+                          example: new_name_user
+                          required: true
+      responses:
+        '200':
+          description: success
+      tags:
+        - authorization
+    """
     modify_request = user_service.validate_modify(request)
     if isinstance(modify, Response):
         return modify_request
@@ -121,6 +286,31 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
 def auth_history(
     user_id: str, user_service: UserService = Provide[Container.user_service]
 ):
+    """
+    ---
+   get:
+      summary: Get User history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                      time:
+                        type: string
+                      fingerprint:
+                        type: string
+      tags:
+        - authorization
+    """
     try:
         history = user_service.get_auth_history(user_id)
     except ServiceException as err:

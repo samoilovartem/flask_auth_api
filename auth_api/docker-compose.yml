@@ -38,6 +38,7 @@ services:
       - "${AUTH_PORT}:${AUTH_CONTAINER_PORT}"
     volumes:
       - ./src/migrations:/app/migrations
+      - ./design:/app/design
     networks:
       - backend
     restart: always
@@ -53,7 +54,7 @@ services:
     volumes:
       - ./design:/usr/share/nginx/html/doc
     environment:
-      API_URL: doc/openapi.yaml
+      API_URL: /doc/test.yaml
     depends_on:
       - auth_app
     profiles:
