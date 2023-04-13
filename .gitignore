@@ -115,3 +115,4 @@ src/.idea/
 ### Docker ###
 .env
 .env.dev
+auth_api/design/test.yaml
