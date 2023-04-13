@@ -54,7 +54,7 @@ services:
     volumes:
       - ./design:/usr/share/nginx/html/doc
     environment:
-      API_URL: /doc/test.yaml
+      API_URL: /doc/openapi.yaml
     depends_on:
       - auth_app
     profiles:
