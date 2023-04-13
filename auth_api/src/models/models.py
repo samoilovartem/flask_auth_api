@@ -5,12 +5,9 @@ from datetime import datetime
 from core.settings import settings
 from db.sql import db_manager
 from flask_security import RoleMixin, UserMixin, utils
-from models.create_partitions import (
-    create_partition_auth_history,
-    create_partition_user,
-)
+from models.create_partitions import create_partition_auth_history
 from pydantic import BaseModel, EmailStr, constr
-from sqlalchemy import FetchedValue, event
+from sqlalchemy import FetchedValue, PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
@@ -99,17 +96,24 @@ class SocialAccount(UUIDMixin, db.Model):
 
 class AuthHistory(UUIDMixin, TimeStampedMixin, db.Model):
     __tablename__ = 'auth_history'
-    __table_args__ = {'schema': settings.postgres_schema}
+    __table_args__ = (
+        PrimaryKeyConstraint('id', 'device'),
+        {
+            'schema': settings.postgres_schema,
+            'postgresql_partition_by': 'LIST (device)',
+            'listeners': [('after_create', create_partition_auth_history)],
+        },
+    )
     user_id = db.Column(
         UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE')
     )
     ip_address = db.Column(db.String(50), nullable=False)
     user_agent = db.Column(db.String(255), nullable=False)
     is_successful = db.Column(db.Boolean, default=False, nullable=False)
-    device = db.Column(db.String(255))
-    auth_event_type = db.Column(db.String, nullable=False)
+    device = db.Column(db.String(255), primary_key=True, nullable=False)
+    auth_event_type = db.Column(db.String(50), nullable=False)
     auth_event_time = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    auth_event_fingerprint = db.Column(db.String, nullable=False)
+    auth_event_fingerprint = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return f'<AuthHistory {self.user_id}>'
@@ -136,10 +140,6 @@ class UserRole(UUIDMixin, db.Model):
     )
 
 
-event.listen(AuthHistory.__table__, 'after_create', create_partition_auth_history)
-event.listen(User.__table__, 'after_create', create_partition_user)
-
-
 class Token(UUIDMixin, db.Model):
     __tablename__ = 'tokens'
     __table_args__ = {'schema': settings.postgres_schema}
@@ -148,11 +148,10 @@ class Token(UUIDMixin, db.Model):
         db.ForeignKey(f'{settings.postgres_schema}.users.id'),
         nullable=False,
     )
-    token_value = db.Column(db.String, nullable=False)
+    token_value = db.Column(db.Text(), nullable=False)
     token_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     expires_at = db.Column(
-        # db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
         db.DateTime(timezone=True),
         nullable=False,
         server_default=FetchedValue(),

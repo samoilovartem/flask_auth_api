@@ -14,8 +14,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     <<: *services-env-file
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}"
     networks:
       - backend
     restart: always
@@ -23,8 +21,6 @@ services:
   auth_redis:
     image: redis:7.0.9
     container_name: auth_redis
-    ports:
-      - "${REDIS_PORT}:${REDIS_CONTAINER_PORT}"
     networks:
       - backend
 
@@ -34,8 +30,6 @@ services:
       context: ./src
       dockerfile: Dockerfile
     <<: *services-env-file
-    ports:
-      - "${AUTH_PORT}:${AUTH_CONTAINER_PORT}"
     volumes:
       - ./src/migrations:/app/migrations
       - ./design:/app/design
@@ -50,7 +44,7 @@ services:
     image: swaggerapi/swagger-ui
     container_name: auth_swagger
     ports:
-      - "8080:8080"
+      - "${SWAGGER_PORT}:${SWAGGER_CONTAINER_PORT}"
     volumes:
       - ./design:/usr/share/nginx/html/doc
     environment:
