@@ -6,12 +6,6 @@ from pydantic import BaseSettings, Field
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(find_dotenv())
 
-USER_ROLES = [
-    ('superuser', 'Administrator with full access'),
-    ('moderator', 'Moderator with limited access'),
-    ('user', 'Regular user with basic access'),
-]
-
 
 class Settings(BaseSettings):
     flask_host: str = Field('0.0.0.0', env='FLASK_HOST')

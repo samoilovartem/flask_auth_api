@@ -5,7 +5,7 @@ monkey.patch_all()
 import click
 
 from core.security_setup import user_datastore
-from core.settings import USER_ROLES, settings
+from core.settings import settings
 from db.sql import db_manager
 from flask.cli import with_appcontext
 from gevent.pywsgi import WSGIServer
@@ -28,14 +28,15 @@ def runserver():
     print(f'Running on {settings.flask_host}:{settings.flask_port}...')
 
 
-@cli.command()
-def create_roles():
+@click.command()
+@click.option('--role', required=True, help='A custom role name to be created.')
+@click.option('--description', required=True, help='A description for the custom role.')
+def create_role(role, description):
     with app.app_context():
-        for role_name, role_description in USER_ROLES:
-            role = Role(name=role_name, description=role_description)
-            db_manager.db.session.add(role)
+        custom_role = Role(name=role, description=description)
+        db_manager.db.session.add(custom_role)
         db_manager.db.session.commit()
-    click.echo(message='All roles created successfully!', color=True)
+    click.echo(message=f'Role "{role}" created successfully!', color=True)
 
 
 @cli.command()
@@ -52,12 +53,9 @@ def create_superuser(username: str, password: str) -> None:
             user = user_datastore.create_user(username=username, password=password)
             user_datastore.add_role_to_user(user, 'superuser')
             click.echo(
-                message=f'Superuser {username} created successfully!', color=True
+                message=f'Superuser "{username}" created successfully!', color=True
             )
     except IntegrityError:
-        # raise ValueError(
-        #     f'Failed to create superuser! User with username "{username}" already exists.',
-        # )
         click.echo(
             message=f'Failed to create superuser! User with username "{username}" already exists.',
             color=True,
@@ -65,7 +63,7 @@ def create_superuser(username: str, password: str) -> None:
 
 
 cli.add_command(create_superuser)
-cli.add_command(create_roles)
+cli.add_command(create_role)
 
 if __name__ == "__main__":
     cli()

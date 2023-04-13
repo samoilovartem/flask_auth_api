@@ -107,9 +107,9 @@ class AuthHistory(UUIDMixin, TimeStampedMixin, db.Model):
     user_agent = db.Column(db.String(255), nullable=False)
     is_successful = db.Column(db.Boolean, default=False, nullable=False)
     device = db.Column(db.String(255))
-    auth_event_type = db.Column(db.String, nullable=False)
+    auth_event_type = db.Column(db.String(50), nullable=False)
     auth_event_time = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    auth_event_fingerprint = db.Column(db.String, nullable=False)
+    auth_event_fingerprint = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return f'<AuthHistory {self.user_id}>'
@@ -148,11 +148,10 @@ class Token(UUIDMixin, db.Model):
         db.ForeignKey(f'{settings.postgres_schema}.users.id'),
         nullable=False,
     )
-    token_value = db.Column(db.String, nullable=False)
+    token_value = db.Column(db.String(255), nullable=False)
     token_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     expires_at = db.Column(
-        # db.DateTime(timezone=True), nullable=False, server_default=FetchedValue()
         db.DateTime(timezone=True),
         nullable=False,
         server_default=FetchedValue(),

@@ -5,6 +5,9 @@ Revises:
 Create Date: 2023-04-09 12:08:24.766710
 
 """
+from datetime import datetime
+from uuid import uuid4
+
 import sqlalchemy as sa
 
 from alembic import op
@@ -33,6 +36,49 @@ def upgrade():
         sa.UniqueConstraint('name'),
         schema='content',
     )
+
+    # define the 'roles' table schema for bulk_insert
+    roles_table = sa.table(
+        'roles',
+        sa.column('id', sa.String),
+        sa.column('name', sa.String),
+        sa.column('description', sa.String),
+        sa.column('created_at', sa.DateTime),
+        sa.column('updated_at', sa.DateTime),
+        schema='content',
+    )
+
+    # get the current UTC date and time
+    now = datetime.utcnow()
+
+    # insert the data into the 'roles' table
+    op.bulk_insert(
+        roles_table,
+        [
+            {
+                'id': str(uuid4()),
+                'name': 'user',
+                'description': 'Regular user with basic access',
+                'created_at': now,
+                'updated_at': now,
+            },
+            {
+                'id': str(uuid4()),
+                'name': 'moderator',
+                'description': 'Moderator with limited access',
+                'created_at': now,
+                'updated_at': now,
+            },
+            {
+                'id': str(uuid4()),
+                'name': 'superuser',
+                'description': 'Administrator with full access',
+                'created_at': now,
+                'updated_at': now,
+            },
+        ],
+    )
+
     op.create_table(
         'users',
         sa.Column('username', sa.String(length=50), nullable=False),
@@ -59,14 +105,14 @@ def upgrade():
         sa.Column('user_agent', sa.String(length=255), nullable=False),
         sa.Column('is_successful', sa.Boolean(), nullable=False),
         sa.Column('device', sa.String(length=255), nullable=True),
-        sa.Column('auth_event_type', sa.String(), nullable=False),
+        sa.Column('auth_event_type', sa.String(length=50), nullable=False),
         sa.Column(
             'auth_event_time',
             sa.DateTime(timezone=True),
             server_default=sa.text('now()'),
             nullable=True,
         ),
-        sa.Column('auth_event_fingerprint', sa.String(), nullable=False),
+        sa.Column('auth_event_fingerprint', sa.String(length=255), nullable=False),
         sa.Column('id', sa.UUID(), nullable=False),
         sa.Column('created_at', sa.DateTime(), nullable=True),
         sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -89,7 +135,7 @@ def upgrade():
     op.create_table(
         'tokens',
         sa.Column('token_owner_id', sa.UUID(), nullable=False),
-        sa.Column('token_value', sa.String(), nullable=False),
+        sa.Column('token_value', sa.String(length=255), nullable=False),
         sa.Column('token_used', sa.Boolean(), nullable=True),
         sa.Column(
             'created_at',
