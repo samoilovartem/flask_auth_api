@@ -170,17 +170,17 @@ class UserService(BaseService):
         user: User = User.query.get(user_id)
 
         if not user:
-            raise ServiceException(error_code=self.USER_NOT_FOUND.code,
-                                   message=self.USER_NOT_FOUND.message)
+            raise ServiceException(
+                error_code=self.USER_NOT_FOUND.code, message=self.USER_NOT_FOUND.message
+            )
 
         if not new_username == user.username:
-            existing_user = User.query.filter(
-                (User.username == new_username)
-            ).first()
+            existing_user = User.query.filter((User.username == new_username)).first()
 
             if existing_user:
-                raise ServiceException(error_code=self.LOGIN_EXISTS.code,
-                                       message=self.LOGIN_EXISTS.message)
+                raise ServiceException(
+                    error_code=self.LOGIN_EXISTS.code, message=self.LOGIN_EXISTS.message
+                )
 
             user.username = new_username
 
@@ -210,6 +210,7 @@ class UserService(BaseService):
                 user_id=user.id,
                 ip_address='127.0.0.1',  # TODO: получить айпи пользователя
                 user_agent='Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>',
+                device='desktop',
                 auth_event_type=event_type,
                 auth_event_fingerprint=str(user_info),
             )
