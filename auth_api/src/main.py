@@ -1,13 +1,15 @@
 from api.common import api
+from apispec import APISpec
+from apispec_webframeworks.flask import FlaskPlugin
 from core import documentation
 from core.containers import Container
 from core.security_setup import setup_user_datastore
 from core.settings import settings
+from core.tracer_setup import setup_tracer
 from db.sql import db_manager
-from flask_jwt_extended import JWTManager
-from apispec import APISpec
-from apispec_webframeworks.flask import FlaskPlugin
+from flask import request
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 
 
 def create_app():
@@ -21,6 +23,7 @@ def create_app():
     setup_documentation(app)
     # Add CORS politics
     CORS(app, resources={r"/api/*": {"origins": "*"}})
+    setup_tracer(app)
     app.app_context().push()
     return app
 
@@ -33,7 +36,10 @@ def setup_app(app, app_settings):
         'SQLALCHEMY_TRACK_MODIFICATIONS'
     ] = app_settings.sqlalchemy_track_modifications
     app.config['JWT_SECRET_KEY'] = app_settings.jwt_secret_key
+
     JWTManager(app)
+
+    app.before_request(before_request)
 
 
 def setup_database(app):
@@ -58,20 +64,20 @@ def setup_documentation(app):
         openapi_version="3.0.2",
         info=dict(description="Sprint 1"),
         plugins=[FlaskPlugin()],
-        servers=[
-            {
-                "url": "http://localhost:5000",
-                "description": "Development server"
-            }
-        ]
+        servers=[{"url": "http://localhost:5000", "description": "Development server"}],
     )
     spec.components.security_scheme(
-        'bearerAuth',
-        {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}
+        'bearerAuth', {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}
     )
     documentation.load_spec(app, spec)
     with open(settings.documentation_path, 'w', encoding='utf-8') as f:
         f.write(spec.to_yaml())
+
+
+def before_request():
+    request_id = request.headers.get('X-Request-Id')
+    if not request_id:
+        raise RuntimeError('request id is required')
 
 
 if __name__ == "__main__":

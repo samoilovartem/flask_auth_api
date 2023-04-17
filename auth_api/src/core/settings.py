@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     admin_default_username: str = Field(env='ADMIN_DEFAULT_USERNAME')
     admin_default_password: str = Field(env='ADMIN_DEFAULT_PASSWORD')
 
+    jaeger_host: str = Field('localhost', env='JAEGER_HOST')
+    jaeger_port: int = Field(6831, env='JAEGER_PORT')
+
     documentation_path: str = os.path.join(BASE_DIR, 'design', 'openapi.yaml')
 
     class Config:
