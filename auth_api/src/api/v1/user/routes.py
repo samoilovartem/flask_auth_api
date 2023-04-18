@@ -1,8 +1,9 @@
 from http import HTTPStatus
 
 from core.containers import Container
-from core.utils import ServiceException, authenticate
+from core.utils import ServiceException, authenticate, rate_limit
 from dependency_injector.wiring import Provide, inject
+from core.settings import settings
 from flask import Blueprint, Response, jsonify, make_response, request
 from flask_jwt_extended import get_jwt, jwt_required
 from services.user import UserService
@@ -11,6 +12,7 @@ user = Blueprint('user', __name__, url_prefix='/user')
 
 
 @user.route('/signup', methods=['POST'])
+@rate_limit(settings.user_rate_limit)
 @inject
 def signup(user_service: UserService = Provide[Container.user_service]):
     """Creates a new user
@@ -72,6 +74,7 @@ def signup(user_service: UserService = Provide[Container.user_service]):
 
 
 @user.route('/login', methods=['POST'])
+@rate_limit(settings.user_rate_limit)
 @inject
 def login(user_service: UserService = Provide[Container.user_service]):
     """Log user in using username and password.
@@ -128,6 +131,7 @@ def login(user_service: UserService = Provide[Container.user_service]):
 
 @user.route('/refresh', methods=['PUT'])
 @jwt_required(refresh=True)
+@rate_limit(settings.user_rate_limit)
 @inject
 def refresh(user_service: UserService = Provide[Container.user_service]):
     """
@@ -178,6 +182,7 @@ def refresh(user_service: UserService = Provide[Container.user_service]):
 @user.route('/logout', methods=['DELETE'])
 @jwt_required()
 @authenticate()
+@rate_limit(settings.user_rate_limit)
 @inject
 def logout(user_id: str, user_service: UserService = Provide[Container.user_service]):
     """
@@ -226,6 +231,7 @@ def logout(user_id: str, user_service: UserService = Provide[Container.user_serv
 @user.route('/modify', methods=['PATCH'])
 @jwt_required()
 @authenticate()
+@rate_limit(settings.user_rate_limit)
 @inject
 def modify(user_id: str, user_service: UserService = Provide[Container.user_service]):
     """
@@ -282,6 +288,7 @@ def modify(user_id: str, user_service: UserService = Provide[Container.user_serv
 @user.route('/auth_history', methods=["GET"])
 @jwt_required()
 @authenticate()
+@rate_limit(settings.user_rate_limit)
 @inject
 def auth_history(
         user_id: str, user_service: UserService = Provide[Container.user_service]
