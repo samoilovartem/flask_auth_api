@@ -67,6 +67,27 @@ services:
     ports:
       - "${NGINX_PORT}:${NGINX_CONTAINER_PORT}"
 
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_TRACES_ENABLED=true
+      - COLLECTOR_OTLP_HTTP_TRACES_ENABLED=true
+      - COLLECTOR_OTLP_METRICS_ENABLED=true
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "13133:13133" # Health Check
+      - "14250:14250" # OTLP/gRPC
+      - "14268:14268" # Jaeger HTTP Thrift
+      - "5775:5775/udp" # Jaeger Agent Compact Thrift
+      - "6831:6831/udp" # Jaeger Agent Compact Thrift
+      - "6832:6832/udp" # Jaeger Agent Binary Thrift
+      - "5778:5778" # Jaeger Agent HTTP
+      - "55680:55680" # OTLP
+      - "9411:9411" # Zipkin
+    networks:
+      - backend
+
 volumes:
   postgres_data:
 
