@@ -117,3 +117,4 @@ src/.idea/
 .env.dev
 auth_api/design/test.yaml
 auth_api/design/openapi.yaml
+auth_api/docker-compose.dev.yml
