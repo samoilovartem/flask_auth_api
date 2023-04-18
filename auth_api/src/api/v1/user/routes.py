@@ -1,9 +1,10 @@
 from http import HTTPStatus
+from time import sleep
 
 from core.containers import Container
+from core.settings import settings
 from core.utils import ServiceException, authenticate, rate_limit
 from dependency_injector.wiring import Provide, inject
-from core.settings import settings
 from flask import Blueprint, Response, jsonify, make_response, request
 from flask_jwt_extended import get_jwt, jwt_required
 from services.user import UserService

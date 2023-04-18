@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
 from core.security_setup import user_datastore
-from core.utils import jwt_roles_required, rate_limit
 from core.settings import settings
+from core.utils import jwt_roles_required, rate_limit
 from db.sql import db_manager
 from flask import Blueprint, jsonify, make_response, request
 from models.models import Role, User, UserRole
