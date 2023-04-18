@@ -1,8 +1,9 @@
+import datetime
+
 from dataclasses import dataclass
 from functools import wraps
 from http import HTTPStatus
 
-import datetime
 from db.redis import redis
 from flask import jsonify, make_response, request
 from flask_jwt_extended import get_jwt, verify_jwt_in_request
