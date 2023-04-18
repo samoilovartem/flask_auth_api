@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     jaeger_host: str = Field('localhost', env='JAEGER_HOST')
     jaeger_port: int = Field(6831, env='JAEGER_PORT')
 
+    service_name: str = Field('auth', env='SERVICE_NAME')
+
     documentation_path: str = os.path.join(BASE_DIR, 'design', 'openapi.yaml')
 
     class Config:
