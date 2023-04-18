@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from time import sleep
 
 from core.containers import Container
 from core.settings import settings
@@ -13,7 +12,6 @@ user = Blueprint('user', __name__, url_prefix='/user')
 
 
 @user.route('/signup', methods=['POST'])
-@rate_limit(settings.user_rate_limit)
 @inject
 def signup(user_service: UserService = Provide[Container.user_service]):
     """Creates a new user
@@ -75,7 +73,6 @@ def signup(user_service: UserService = Provide[Container.user_service]):
 
 
 @user.route('/login', methods=['POST'])
-@rate_limit(settings.user_rate_limit)
 @inject
 def login(user_service: UserService = Provide[Container.user_service]):
     """Log user in using username and password.
@@ -132,7 +129,6 @@ def login(user_service: UserService = Provide[Container.user_service]):
 
 @user.route('/refresh', methods=['PUT'])
 @jwt_required(refresh=True)
-@rate_limit(settings.user_rate_limit)
 @inject
 def refresh(user_service: UserService = Provide[Container.user_service]):
     """
@@ -347,7 +343,6 @@ def auth_history(
     """
     try:
         kwargs = {key: int(request.args[key]) for key in request.args}
-        print(kwargs)
         history = user_service.get_auth_history(user_id, **kwargs)
     except ServiceException as err:
         return make_response(jsonify(err), HTTPStatus.BAD_REQUEST)
