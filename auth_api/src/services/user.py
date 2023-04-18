@@ -1,15 +1,15 @@
 from datetime import datetime
 from typing import Union
 
-from flask_sqlalchemy.pagination import QueryPagination
-
 from core.security_setup import user_datastore
 from core.settings import settings
+from core.tracer_setup import get_trace
 from core.utils import ServiceException
 from db.redis import redis
 from db.sql import db_manager
 from flask import Request, Response
 from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_sqlalchemy.pagination import QueryPagination
 from models.models import (
     AuthHistory,
     LoginRequest,
@@ -21,6 +21,7 @@ from models.models import (
 from services.base import BaseService
 
 
+@get_trace('generate_tokens')
 def generate_tokens(user: User):
     """Create new access and refresh tokens for the user"""
     user_roles = [role.name for role in user.roles]
@@ -34,6 +35,7 @@ def generate_tokens(user: User):
     return access_token, refresh_token
 
 
+@get_trace('authenticate')
 def authenticate(access_token) -> None:
     """Check that access token is fresh"""
     if not redis.get(access_token) == b'':
@@ -154,8 +156,8 @@ class UserService(BaseService):
 
     def get_auth_history(self, user_id, page: int = 1, per_page: int = 3):
         history_pagination: QueryPagination = AuthHistory.query.filter(
-            (AuthHistory.user_id == user_id)) \
-            .paginate(page=page, per_page=per_page)
+            (AuthHistory.user_id == user_id)
+        ).paginate(page=page, per_page=per_page)
 
         result = {
             "total": history_pagination.total,
@@ -163,11 +165,14 @@ class UserService(BaseService):
             "per_page": history_pagination.per_page,
             "prev_page": history_pagination.prev_num,
             "next_page": history_pagination.next_num,
-            "events": [{
-                'uuid': event.id,
-                'time': event.auth_event_time,
-                'fingerprint': event.auth_event_fingerprint,
-            } for event in history_pagination.items],
+            "events": [
+                {
+                    'uuid': event.id,
+                    'time': event.auth_event_time,
+                    'fingerprint': event.auth_event_fingerprint,
+                }
+                for event in history_pagination.items
+            ],
         }
         return result
 
