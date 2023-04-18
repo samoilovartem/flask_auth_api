@@ -87,3 +87,44 @@ def jwt_roles_required(*role_names):
         return wrapper
 
     return decorator
+
+
+def rate_limit(max_rate: int):
+    """
+    Decorator that checks that the user has not exceeded the request limit.
+
+    Usage:
+        @rate_limit(20)
+        def protected_route():
+            ...
+
+    :param max_rate: maximum number of requests per minute for the user
+    :return: The decorated function if the user has not exceeded the request limit;
+             otherwise, a 429 Too Many Requests error response.
+    """
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if 'user_id' not in kwargs:
+                return fn(*args, **kwargs)
+
+            key = f"buffer:{kwargs['user_id']}"
+            buffer_size = redis.incr(key, 1)
+            if buffer_size > 10:
+                redis.decr(key)
+                return make_response(
+                    jsonify(error_code='TOO_MANY_REQUESTS',
+                            message='API rate limit exceeded'),
+                    HTTPStatus.TOO_MANY_REQUESTS
+                )
+
+            result = fn(*args, **kwargs)  # pragma: no cover
+            redis.decr(key)
+
+            return result
+
+        return wrapper
+
+    return decorator
+
