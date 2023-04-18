@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from functools import wraps
 from http import HTTPStatus
 
+import datetime
 from db.redis import redis
 from flask import jsonify, make_response, request
 from flask_jwt_extended import get_jwt, verify_jwt_in_request
@@ -94,7 +95,7 @@ def rate_limit(max_rate: int):
     Decorator that checks that the user has not exceeded the request limit.
 
     Usage:
-        @rate_limit(20)
+        @rate_limit(max_rate=20)
         def protected_route():
             ...
 
@@ -109,20 +110,23 @@ def rate_limit(max_rate: int):
             if 'user_id' not in kwargs:
                 return fn(*args, **kwargs)
 
-            key = f"buffer:{kwargs['user_id']}"
-            buffer_size = redis.incr(key, 1)
-            if buffer_size > 10:
-                redis.decr(key)
+            pipe = redis.pipeline()
+            now = datetime.datetime.now()
+            key = f"{kwargs['user_id']}:{now.minute}"
+
+            pipe.incr(key, 1)
+            pipe.expire(key, 59)
+
+            result = pipe.execute()
+            request_number = result[0]
+            if request_number > max_rate:
                 return make_response(
                     jsonify(error_code='TOO_MANY_REQUESTS',
                             message='API rate limit exceeded'),
                     HTTPStatus.TOO_MANY_REQUESTS
                 )
 
-            result = fn(*args, **kwargs)  # pragma: no cover
-            redis.decr(key)
-
-            return result
+            return fn(*args, **kwargs)
 
         return wrapper
 
