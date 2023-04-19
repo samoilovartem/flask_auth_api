@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
 from core.security_setup import user_datastore
-from core.utils import jwt_roles_required
+from core.settings import settings
+from core.utils import jwt_roles_required, rate_limit
 from db.sql import db_manager
 from flask import Blueprint, jsonify, make_response, request
 from models.models import Role, User, UserRole
@@ -11,6 +12,7 @@ role = Blueprint('role', __name__, url_prefix='/role')
 
 @role.route('/', methods=['POST'])
 @jwt_roles_required()
+@rate_limit(settings.user_rate_limit)
 def create_role():
     """
     Create a new role with the given name and description.
@@ -87,6 +89,7 @@ def create_role():
 
 @role.route('/', methods=['GET'])
 @jwt_roles_required()
+@rate_limit(settings.user_rate_limit)
 def view_roles():
     """
     Retrieve all existing roles.
@@ -141,6 +144,7 @@ def view_roles():
 
 @role.route('/<role_id>', methods=['PUT'])
 @jwt_roles_required()
+@rate_limit(settings.user_rate_limit)
 def update_role(role_id):
     """
     Update the name and/or description of the role with the given role_id.
@@ -213,6 +217,7 @@ def update_role(role_id):
 
 @role.route('/<role_id>', methods=['DELETE'])
 @jwt_roles_required()
+@rate_limit(settings.user_rate_limit)
 def delete_role(role_id):
     """
     Delete the role with the given role_id.
@@ -267,6 +272,7 @@ def delete_role(role_id):
 
 @role.route('/assign/<user_id>', methods=['POST'])
 @jwt_roles_required()
+@rate_limit(settings.user_rate_limit)
 def assign_role_to_user(user_id):
     """
     Assign a role to a user by specifying the user_id and role_id in the request payload.
@@ -333,6 +339,7 @@ def assign_role_to_user(user_id):
         return jsonify({"error": "Role or user not found"}), HTTPStatus.NOT_FOUND
 
     user_role = UserRole.query.filter_by(user_id=user.id, role_id=role.id).first()
+
     if user_role is not None:
         return jsonify({"error": "User already has this role"}), HTTPStatus.CONFLICT
 
@@ -345,6 +352,7 @@ def assign_role_to_user(user_id):
 
 @role.route('/revoke/<user_id>', methods=['DELETE'])
 @jwt_roles_required()
+@rate_limit(settings.user_rate_limit)
 def revoke_role_from_user(user_id):
     """
     Revoke a role from a user by specifying the user_id and role_id in the request payload.
@@ -421,6 +429,7 @@ def revoke_role_from_user(user_id):
         return jsonify({"error": "Role or user not found"}), HTTPStatus.NOT_FOUND
 
     user_role = UserRole.query.filter_by(user_id=user.id, role_id=role.id).first()
+
     if user_role is None:
         return jsonify({"error": "User does not have this role"}), HTTPStatus.CONFLICT
 

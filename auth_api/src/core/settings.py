@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     security_password_salt: str = Field(env='SECURITY_PASSWORD_SALT')
     security_password_hash: str = Field(env='SECURITY_PASSWORD_HASH')
 
+    user_rate_limit: int = Field(env='USER_RATE_LIMIT')
+
     google_auth_client_id: str = Field(env='GOOGLE_AUTH_CLIENT_ID')
     google_auth_secret: str = Field(env='GOOGLE_AUTH_SECRET')
 
