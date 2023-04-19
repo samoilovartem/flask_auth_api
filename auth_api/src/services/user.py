@@ -14,11 +14,11 @@ from models.models import (
     AuthHistory,
     LoginRequest,
     ModifyRequest,
+    Role,
     SignupRequest,
     Token,
     User,
     UserRole,
-    Role,
 )
 from services.base import BaseService
 
