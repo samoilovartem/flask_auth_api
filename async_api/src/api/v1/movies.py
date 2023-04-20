@@ -1,10 +1,12 @@
 from uuid import UUID
 
+from http import HTTPStatus
 from api.v1.utils import raise_exception_if_not_found, to_response_model
 from core.config import Config
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from models.schemas import MovieDetail, MovieList, SortField
 from services.movies import MovieService, get_service
+from core.auth import AuthUser, get_auth_user
 
 router = APIRouter(prefix='/movies', tags=['Movies'])
 
@@ -22,6 +24,7 @@ async def get_movies_list(
     page_number: int = Query(default=0, ge=0),
     page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
     movie_service: MovieService = Depends(get_service),
+    auth_user: AuthUser = Depends(get_auth_user),
 ) -> list[MovieList]:
     """
     Get a list of all movies with optional filtering by genre and sorting by IMDb rating.
@@ -72,13 +75,22 @@ async def get_movies_by_search(
     response_model_exclude_unset=True,
 )
 async def get_movie_details(
-    movie_id: UUID, movie_service: MovieService = Depends(get_service)
+    movie_id: UUID,
+    movie_service: MovieService = Depends(get_service),
+    auth_user: AuthUser = Depends(get_auth_user),
 ) -> MovieDetail:
     """
     Get detailed information about a specific movie by its ID.
     """
     movie = await movie_service.get_movie_by_id(movie_id)
     raise_exception_if_not_found(movie, 'Movie not found')
+
+    if not auth_user or not auth_user.is_subscriber():
+        if movie.imdb_rating > Config.NOT_SUBSCRIBER_MAX_RATING:
+            raise HTTPException(
+                status_code=HTTPStatus.FORBIDDEN,
+                detail="You have to subscribe to watch this movie",
+            )
     return movie
 
 
