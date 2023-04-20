@@ -1,12 +1,12 @@
+from http import HTTPStatus
 from uuid import UUID
 
-from http import HTTPStatus
 from api.v1.utils import raise_exception_if_not_found, to_response_model
+from core.auth import AuthUser, get_auth_user
 from core.config import Config
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from models.schemas import MovieDetail, MovieList, SortField
 from services.movies import MovieService, get_service
-from core.auth import AuthUser, get_auth_user
 
 router = APIRouter(prefix='/movies', tags=['Movies'])
 

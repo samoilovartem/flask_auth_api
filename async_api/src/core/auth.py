@@ -1,9 +1,10 @@
 from uuid import uuid4
 
-from fastapi import Request
 import aiohttp
+
 from aiohttp import ClientConnectionError
 from core.config import Config
+from fastapi import Request
 
 
 class AuthUser:
