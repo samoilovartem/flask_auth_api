@@ -14,9 +14,11 @@ from models.models import (
     AuthHistory,
     LoginRequest,
     ModifyRequest,
+    Role,
     SignupRequest,
     Token,
     User,
+    UserRole,
 )
 from services.base import BaseService
 
@@ -199,6 +201,20 @@ class UserService(BaseService):
 
         if db_manager.db.session.is_modified(user):
             db_manager.db.session.commit()
+
+    def get_user_roles_list(self, user_id: str) -> list[Role]:
+        existing_user: User = User.query.get(user_id)
+        if not existing_user:
+            error_code = self.USER_NOT_FOUND.code
+            message = self.USER_NOT_FOUND.message
+            raise ServiceException(error_code=error_code, message=message)
+
+        user_roles = UserRole.query.filter(
+            UserRole.user_id == user_id).all()
+
+        role_ids = [r.role_id for r in user_roles]
+        roles = [Role.query.get(role_id) for role_id in role_ids]
+        return roles
 
     @staticmethod
     def commit_authentication(

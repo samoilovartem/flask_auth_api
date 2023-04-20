@@ -347,3 +347,28 @@ def auth_history(
     except ServiceException as err:
         return make_response(jsonify(err), HTTPStatus.BAD_REQUEST)
     return make_response(jsonify(history), HTTPStatus.OK)
+
+
+@user.route('/<uuid:some_user_id>/roles', methods=['GET'])
+@jwt_required()
+@inject
+def get_user_roles_list(
+        some_user_id: str,
+        user_service: UserService = Provide[Container.user_service]):
+    roles_list = user_service.get_user_roles_list(some_user_id)
+    result = [{'role_id': role.id,
+               'role_name': role.name} for role in roles_list]
+    return jsonify(result)
+
+
+@user.route('/roles', methods=['GET'])
+@jwt_required()
+@authenticate()
+@inject
+def get_current_user_roles_list(
+        user_id: str,
+        user_service: UserService = Provide[Container.user_service]):
+    roles_list = user_service.get_user_roles_list(user_id)
+    result = [{'role_id': role.id,
+               'role_name': role.name} for role in roles_list]
+    return jsonify(result)

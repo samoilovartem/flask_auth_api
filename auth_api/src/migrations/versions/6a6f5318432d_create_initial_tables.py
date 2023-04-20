@@ -64,6 +64,13 @@ def upgrade():
             },
             {
                 'id': str(uuid4()),
+                'name': 'subscriber',
+                'description': 'User with access to all movies',
+                'created_at': now,
+                'updated_at': now,
+            },
+            {
+                'id': str(uuid4()),
                 'name': 'moderator',
                 'description': 'Moderator with limited access',
                 'created_at': now,
