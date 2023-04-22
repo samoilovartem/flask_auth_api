@@ -24,7 +24,6 @@ async def get_movies_list(
     page_number: int = Query(default=0, ge=0),
     page_size: int = Query(default=Config.PROJECT_GLOBAL_PAGE_SIZE, gt=0),
     movie_service: MovieService = Depends(get_service),
-    auth_user: AuthUser = Depends(get_auth_user),
 ) -> list[MovieList]:
     """
     Get a list of all movies with optional filtering by genre and sorting by IMDb rating.
