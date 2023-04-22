@@ -64,7 +64,7 @@ def setup_documentation(app):
         openapi_version="3.0.2",
         info=dict(description="Sprint 1"),
         plugins=[FlaskPlugin()],
-        servers=[{"url": "http://localhost:5000", "description": "Development server"}],
+        servers=[{"url": "http://localhost", "description": "Development server"}],
     )
     spec.components.security_scheme(
         'bearerAuth', {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}
