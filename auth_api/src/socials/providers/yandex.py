@@ -1,31 +1,31 @@
+import requests
 from collections import namedtuple
 from functools import lru_cache
 from typing import Dict
-
-import requests
+from requests.auth import HTTPBasicAuth
 
 from core.settings import settings
 from socials.interface import SocialProvider
 
-PROVIDER_NAME = 'google'
-AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
-TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
-USERINFO_URL = 'https://www.googleapis.com/oauth2/v1/userinfo'
+PROVIDER_NAME = 'yandex'
+AUTH_URL = 'https://oauth.yandex.ru/authorize'
+TOKEN_URL = ' https://oauth.yandex.ru/token'
+USERINFO_URL = 'https://login.yandex.ru/info?'
 SCOPES = {
-    'email': 'https://www.googleapis.com/auth/userinfo.email',
-    'social': 'https://www.googleapis.com/auth/userinfo.profile',
+    'email': 'login:email',
+    'social': 'login:info',
 }
 
 Tokens = namedtuple(
-    'Tokens', ['access_token', 'expires_in', 'scope', 'token_type', 'id_token']
+    'Tokens', ['access_token', 'expires_in', 'token_type', 'refresh_token']
 )
 
 
-class GoogleAuthProvider(SocialProvider):
+class YandexAuthProvider(SocialProvider):
     def __init__(self):
         self.handler = settings.social_auth_handler + PROVIDER_NAME
-        self.client_id = settings.google_auth_client_id
-        self.client_secret = settings.google_auth_secret
+        self.client_id = settings.yandex_auth_client_id
+        self.client_secret = settings.yandex_auth_secret
 
     @property
     def name(self) -> str:
@@ -36,7 +36,7 @@ class GoogleAuthProvider(SocialProvider):
                     scopes: tuple = (SCOPES['email'], SCOPES['social'])
                     ):
         """
-        Create redirect url to Google authorization form
+        Create redirect url to authorization form
         """
 
         params = {
@@ -55,13 +55,9 @@ class GoogleAuthProvider(SocialProvider):
         """
 
         tokens = self.__get_tokens_for_current_user(code)
-        params = {
-            'access_token': tokens.access_token,
-            'id_token': tokens.id_token,
-            'token_type': tokens.token_type,
-            'expires_in': tokens.expires_in,
-        }
-        r = requests.get(USERINFO_URL, params=params)
+        r = requests.post(USERINFO_URL,
+                          headers={"Authorization": f"OAuth {tokens.access_token}"},
+                          json={"format": "js"})
         r.raise_for_status()
         return r.json()
 
@@ -71,12 +67,11 @@ class GoogleAuthProvider(SocialProvider):
         """
 
         body = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'redirect_uri': self.handler,
             'grant_type': 'authorization_code',
             'code': code,
         }
-        r = requests.post(TOKEN_URL, json=body)
+        r = requests.post(TOKEN_URL, data=body,
+                          auth=HTTPBasicAuth(self.client_id, self.client_secret))
+        print(r.content)
         r.raise_for_status()
         return Tokens(**r.json())

@@ -7,7 +7,7 @@ class SocialProvider(ABC):
         pass
 
     @abstractmethod
-    def redirect_url(self, *args, **kwargs) -> str:
+    def request_url(self, *args, **kwargs) -> str:
         pass
 
     @abstractmethod

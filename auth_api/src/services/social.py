@@ -1,11 +1,12 @@
+from typing import Iterable
+
 from core.utils import ServiceException
 from socials.interface import SocialProvider
 from socials.providers.google import GoogleAuthProvider
+from socials.providers.vk import VkAuthProvider
+from socials.providers.yandex import YandexAuthProvider
 
-HANDLER_URL = 'http://localhost:8000/api/v1/social/handler/'
-
-providers = [GoogleAuthProvider]
-
+providers = [GoogleAuthProvider, YandexAuthProvider, VkAuthProvider]
 
 class SocialAuthService:
     def __init__(self):
@@ -24,6 +25,10 @@ class SocialAuthService:
         raise ServiceException(
             message='Social Provider not found', error_code='NOT FOUND'
         )
+
+    def iter(self) -> Iterable[SocialProvider]:
+        for _ in self.providers:
+            yield self.providers[_]
 
 
 social_auth_service = SocialAuthService()
