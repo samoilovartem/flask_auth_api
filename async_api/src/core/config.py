@@ -69,6 +69,14 @@ class Config(BaseSettings):
     MIN_SIZE: int = Field(10, env='MIN_SIZE')
     MAX_SIZE: int = Field(20, env='MAX_SIZE')
 
+    JWT_SECRET: str = Field('secret', env='JWT_SECRET')
+    JWT_ALGORITHM: str = Field('HS256', env='JWT_ALGORITHM')
+
+    AUTH_API_URL: str = Field(
+        'http://localhost:80/api/v1/user/roles', env='AUTH_API_URL'
+    )
+    NOT_SUBSCRIBER_MAX_RATING: int = Field(6, env='NOT_SUBSCRIBER_MAX_RATING')
+
     class Config:
         env_file = os.path.join(BASE_DIR, '..', '.env')
 
