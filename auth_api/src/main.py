@@ -23,7 +23,7 @@ def create_app():
     setup_documentation(app)
     # Add CORS politics
     CORS(app, resources={r"/api/*": {"origins": "*"}})
-    setup_tracer(app)
+    setup_tracer(app) if settings.tracer_enabled else None
     app.app_context().push()
     return app
 
