@@ -43,9 +43,12 @@ class AuthUser:
             return False
 
     def is_subscriber(self):
-        for role in self.roles:
-            if role['role_name'] == 'subscriber' or role['role_name'] == 'superuser':
-                return True
+        try:
+            for role in self.roles:
+                if role['role_name'] == 'subscriber' or role['role_name'] == 'superuser':
+                    return True
+        except TypeError:
+            return False
 
         return False
 
