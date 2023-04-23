@@ -122,9 +122,11 @@ def rate_limit(max_rate: int):
             request_number = result[0]
             if request_number > max_rate:
                 return make_response(
-                    jsonify(error_code='TOO_MANY_REQUESTS',
-                            message='API rate limit exceeded'),
-                    HTTPStatus.TOO_MANY_REQUESTS
+                    jsonify(
+                        error_code='TOO_MANY_REQUESTS',
+                        message='API rate limit exceeded',
+                    ),
+                    HTTPStatus.TOO_MANY_REQUESTS,
                 )
 
             return fn(*args, **kwargs)
@@ -132,4 +134,3 @@ def rate_limit(max_rate: int):
         return wrapper
 
     return decorator
-

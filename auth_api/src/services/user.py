@@ -209,8 +209,7 @@ class UserService(BaseService):
             message = self.USER_NOT_FOUND.message
             raise ServiceException(error_code=error_code, message=message)
 
-        user_roles = UserRole.query.filter(
-            UserRole.user_id == user_id).all()
+        user_roles = UserRole.query.filter(UserRole.user_id == user_id).all()
 
         role_ids = [r.role_id for r in user_roles]
         roles = [Role.query.get(role_id) for role_id in role_ids]

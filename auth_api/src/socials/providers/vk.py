@@ -1,11 +1,11 @@
-import requests
 from collections import namedtuple
 from functools import lru_cache
 from typing import Dict
 
-from requests.auth import HTTPBasicAuth
+import requests
 
 from core.settings import settings
+from requests.auth import HTTPBasicAuth
 from socials.interface import SocialProvider
 
 PROVIDER_NAME = 'vk'
@@ -18,9 +18,7 @@ SCOPES = {
     'social': 'friends,offline',
 }
 
-Tokens = namedtuple(
-    'Tokens', ['access_token', 'expires_in', 'user_id', 'email']
-)
+Tokens = namedtuple('Tokens', ['access_token', 'expires_in', 'user_id', 'email'])
 
 
 class VkAuthProvider(SocialProvider):
@@ -34,9 +32,7 @@ class VkAuthProvider(SocialProvider):
         return PROVIDER_NAME
 
     @lru_cache
-    def request_url(self,
-                    scopes: tuple = (SCOPES['email'], SCOPES['social'])
-                    ):
+    def request_url(self, scopes: tuple = (SCOPES['email'], SCOPES['social'])):
         """
         Create redirect url to authorization form
         """
@@ -61,7 +57,7 @@ class VkAuthProvider(SocialProvider):
             'access_token': tokens.access_token,
             'user_ids': tokens.user_id,
             'fields': 'sex,bdate,city,country,photo_max_orig',
-            'v': VERSION
+            'v': VERSION,
         }
         r = requests.post(USERINFO_URL, params=params)
         r.raise_for_status()
@@ -81,6 +77,10 @@ class VkAuthProvider(SocialProvider):
             'client_secret': self.client_secret,
             'redirect_uri': self.handler,
         }
-        r = requests.post(TOKEN_URL, params=params, auth=HTTPBasicAuth(self.client_id, self.client_secret))
+        r = requests.post(
+            TOKEN_URL,
+            params=params,
+            auth=HTTPBasicAuth(self.client_id, self.client_secret),
+        )
         r.raise_for_status()
         return Tokens(**r.json())
