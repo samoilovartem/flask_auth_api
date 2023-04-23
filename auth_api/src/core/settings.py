@@ -35,8 +35,13 @@ class Settings(BaseSettings):
 
     user_rate_limit: int = Field(env='USER_RATE_LIMIT')
 
+    social_auth_handler: str = Field(env='SOCIAL_AUTH_HANDLER')
     google_auth_client_id: str = Field(env='GOOGLE_AUTH_CLIENT_ID')
     google_auth_secret: str = Field(env='GOOGLE_AUTH_SECRET')
+    yandex_auth_client_id: str = Field(env='YANDEX_AUTH_CLIENT_ID')
+    yandex_auth_secret: str = Field(env='YANDEX_AUTH_SECRET')
+    vk_auth_client_id: str = Field(env='VK_AUTH_CLIENT_ID')
+    vk_auth_secret: str = Field(env='VK_AUTH_SECRET')
 
     admin_default_username: str = Field(env='ADMIN_DEFAULT_USERNAME')
     admin_default_password: str = Field(env='ADMIN_DEFAULT_PASSWORD')

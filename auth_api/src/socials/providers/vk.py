@@ -1,31 +1,33 @@
+import requests
 from collections import namedtuple
 from functools import lru_cache
 from typing import Dict
 
-import requests
+from requests.auth import HTTPBasicAuth
 
 from core.settings import settings
 from socials.interface import SocialProvider
 
-PROVIDER_NAME = 'google'
-AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
-TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
-USERINFO_URL = 'https://www.googleapis.com/oauth2/v1/userinfo'
+PROVIDER_NAME = 'vk'
+VERSION = '5.131'
+AUTH_URL = 'https://oauth.vk.com/authorize'
+TOKEN_URL = 'https://oauth.vk.com/access_token'
+USERINFO_URL = 'https://api.vk.com/method/users.get?'
 SCOPES = {
-    'email': 'https://www.googleapis.com/auth/userinfo.email',
-    'social': 'https://www.googleapis.com/auth/userinfo.profile',
+    'email': 'email',
+    'social': 'friends,offline',
 }
 
 Tokens = namedtuple(
-    'Tokens', ['access_token', 'expires_in', 'scope', 'token_type', 'id_token']
+    'Tokens', ['access_token', 'expires_in', 'user_id', 'email']
 )
 
 
-class GoogleAuthProvider(SocialProvider):
+class VkAuthProvider(SocialProvider):
     def __init__(self):
         self.handler = settings.social_auth_handler + PROVIDER_NAME
-        self.client_id = settings.google_auth_client_id
-        self.client_secret = settings.google_auth_secret
+        self.client_id = settings.vk_auth_client_id
+        self.client_secret = settings.vk_auth_secret
 
     @property
     def name(self) -> str:
@@ -36,14 +38,14 @@ class GoogleAuthProvider(SocialProvider):
                     scopes: tuple = (SCOPES['email'], SCOPES['social'])
                     ):
         """
-        Create redirect url to Google authorization form
+        Create redirect url to authorization form
         """
 
         params = {
             'client_id': self.client_id,
             'redirect_uri': self.handler,
             'response_type': "code",
-            'scope': ' '.join(scopes),
+            'scope': ','.join(scopes),
         }
         return '{}?client_id={}&redirect_uri={}&response_type={}&scope={}'.format(
             AUTH_URL, *params.values()
@@ -57,26 +59,28 @@ class GoogleAuthProvider(SocialProvider):
         tokens = self.__get_tokens_for_current_user(code)
         params = {
             'access_token': tokens.access_token,
-            'id_token': tokens.id_token,
-            'token_type': tokens.token_type,
-            'expires_in': tokens.expires_in,
+            'user_ids': tokens.user_id,
+            'fields': 'sex,bdate,city,country,photo_max_orig',
+            'v': VERSION
         }
-        r = requests.get(USERINFO_URL, params=params)
+        r = requests.post(USERINFO_URL, params=params)
         r.raise_for_status()
-        return r.json()
+        response = r.json()
+        if 'error' in response:
+            raise ValueError(response['error']['error_msg'])
+        return response['response'][0]
 
     def __get_tokens_for_current_user(self, code: str) -> Tokens:
         """
-        Retrieve access/refresh tokens for work with Google services from user
+        Retrieve access token for work with vkontakte services from user
         """
 
-        body = {
+        params = {
+            'code': code,
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'redirect_uri': self.handler,
-            'grant_type': 'authorization_code',
-            'code': code,
         }
-        r = requests.post(TOKEN_URL, json=body)
+        r = requests.post(TOKEN_URL, params=params, auth=HTTPBasicAuth(self.client_id, self.client_secret))
         r.raise_for_status()
         return Tokens(**r.json())
