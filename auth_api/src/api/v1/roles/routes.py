@@ -15,59 +15,59 @@ role = Blueprint('role', __name__, url_prefix='/role')
 @rate_limit(settings.user_rate_limit)
 def create_role():
     """
-    Create a new role with the given name and description.
-    ---
-   post:
-      summary: Create a new role with the given name and description.
-      security:
-        - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  description:
-                    type: string
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Role created successfully
-        '400':
-          description: bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Missing name or description
-        '409':
-          description: conflict
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Role already exists
-        '401':
-          description: unathorized
-        '403':
-          description: forbidden
-      tags:
-        - roles
+     Create a new role with the given name and description.
+     ---
+    post:
+       summary: Create a new role with the given name and description.
+       security:
+         - bearerAuth: []
+       requestBody:
+         content:
+           application/json:
+             schema:
+                 type: object
+                 properties:
+                   name:
+                     type: string
+                   description:
+                     type: string
+       responses:
+         '200':
+           description: success
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   message:
+                     type: string
+                     example: Role created successfully
+         '400':
+           description: bad request
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   message:
+                     type: string
+                     example: Missing name or description
+         '409':
+           description: conflict
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   message:
+                     type: string
+                     example: Role already exists
+         '401':
+           description: unathorized
+         '403':
+           description: forbidden
+       tags:
+         - roles
     """
     data = request.get_json()
     name = data.get('name')
@@ -92,39 +92,39 @@ def create_role():
 @rate_limit(settings.user_rate_limit)
 def view_roles():
     """
-    Retrieve all existing roles.
-    ---
-   get:
-      summary: Retrieve all existing roles.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      description:
-                        type: string
-                      created_at:
-                        type: string
-                      updated_at:
-                        type: string
+     Retrieve all existing roles.
+     ---
+    get:
+       summary: Retrieve all existing roles.
+       security:
+         - bearerAuth: []
+       responses:
+         '200':
+           description: success
+           content:
+             application/json:
+               schema:
+                 type: array
+                 items:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                       name:
+                         type: string
+                       description:
+                         type: string
+                       created_at:
+                         type: string
+                       updated_at:
+                         type: string
 
-        '401':
-          description: unathorized
-        '403':
-          description: forbidden
-      tags:
-        - roles
+         '401':
+           description: unathorized
+         '403':
+           description: forbidden
+       tags:
+         - roles
     """
     roles = Role.query.all()
     result = []

@@ -32,9 +32,7 @@ class GoogleAuthProvider(SocialProvider):
         return PROVIDER_NAME
 
     @lru_cache
-    def request_url(self,
-                    scopes: tuple = (SCOPES['email'], SCOPES['social'])
-                    ):
+    def request_url(self, scopes: tuple = (SCOPES['email'], SCOPES['social'])):
         """
         Create redirect url to Google authorization form
         """

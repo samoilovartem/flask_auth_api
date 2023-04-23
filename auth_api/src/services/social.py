@@ -8,6 +8,7 @@ from socials.providers.yandex import YandexAuthProvider
 
 providers = [GoogleAuthProvider, YandexAuthProvider, VkAuthProvider]
 
+
 class SocialAuthService:
     def __init__(self):
         self.providers = dict()

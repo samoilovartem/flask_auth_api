@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     service_name: str = Field('auth', env='SERVICE_NAME')
 
     documentation_path: str = os.path.join(BASE_DIR, 'design', 'openapi.yaml')
+    tracer_enabled: bool = Field(True, env='TRACER_ENABLED')
 
     class Config:
         env_file = os.path.join(BASE_DIR, '..', '.env')

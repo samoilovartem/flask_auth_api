@@ -1,10 +1,11 @@
-import requests
 from collections import namedtuple
 from functools import lru_cache
 from typing import Dict
-from requests.auth import HTTPBasicAuth
+
+import requests
 
 from core.settings import settings
+from requests.auth import HTTPBasicAuth
 from socials.interface import SocialProvider
 
 PROVIDER_NAME = 'yandex'
@@ -32,9 +33,7 @@ class YandexAuthProvider(SocialProvider):
         return PROVIDER_NAME
 
     @lru_cache
-    def request_url(self,
-                    scopes: tuple = (SCOPES['email'], SCOPES['social'])
-                    ):
+    def request_url(self, scopes: tuple = (SCOPES['email'], SCOPES['social'])):
         """
         Create redirect url to authorization form
         """
@@ -55,9 +54,11 @@ class YandexAuthProvider(SocialProvider):
         """
 
         tokens = self.__get_tokens_for_current_user(code)
-        r = requests.post(USERINFO_URL,
-                          headers={"Authorization": f"OAuth {tokens.access_token}"},
-                          json={"format": "js"})
+        r = requests.post(
+            USERINFO_URL,
+            headers={"Authorization": f"OAuth {tokens.access_token}"},
+            json={"format": "js"},
+        )
         r.raise_for_status()
         return r.json()
 
@@ -70,8 +71,9 @@ class YandexAuthProvider(SocialProvider):
             'grant_type': 'authorization_code',
             'code': code,
         }
-        r = requests.post(TOKEN_URL, data=body,
-                          auth=HTTPBasicAuth(self.client_id, self.client_secret))
+        r = requests.post(
+            TOKEN_URL, data=body, auth=HTTPBasicAuth(self.client_id, self.client_secret)
+        )
         print(r.content)
         r.raise_for_status()
         return Tokens(**r.json())
