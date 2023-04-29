@@ -24,10 +24,6 @@ Nginx: High-performance web server and reverse proxy server used as the entry po
 
 Docker: Platform for packaging and deploying applications in isolated containers.
 
-### Testing:
-
-Pytest + pytest coverage: Framework for writing and executing tests, with code coverage measurement.
-
 ### ORM:
 
 SQLAlchemy: SQL toolkit and Object-Relational Mapping library for database interactions.
@@ -50,7 +46,7 @@ SQLAlchemy: SQL toolkit and Object-Relational Mapping library for database inter
 ### Launch
 1. Clone the repository.
 ```shell
-git clone https://github.com/safeisnotanoption/Auth_sprint_1.git
+git clone https://github.com/samoilovartem/flask_auth_api.git
 ```
 
 2. Build and run the project.
@@ -58,16 +54,7 @@ git clone https://github.com/safeisnotanoption/Auth_sprint_1.git
 docker compose up --build
 ```
 
-3. Load the database with users-roles data.
-```shell
-docker exec -it auth_app python manage.py create-roles
-```
-
-4. Create a superuser.
+3. Create a superuser.
 ```shell
 docker exec -it auth_app python manage.py create-superuser --username <USERNAME> --password <PASSWORD>
 ```
-
-### Tests
-
-To be continued...
